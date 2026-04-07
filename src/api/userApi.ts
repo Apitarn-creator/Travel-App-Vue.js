@@ -36,13 +36,21 @@ export async function login(credentials: { email: string; password?: string }) {
   }
 
   // ฟังก์ชันสำหรับอัปเดตข้อมูลโปรไฟล์
-export async function updateProfile(id: number, userData: { username: string; avatarUrl?: string }) {
+  export async function updateProfile(id: number, userData: any) {
     const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         username: userData.username,
-        avatarUrl: userData.avatarUrl
+        avatarUrl: userData.avatarUrl,
+        profile: {
+          nickname: userData.nickname,
+          bio: userData.bio,
+          gender: userData.gender,
+          birthdate: userData.birthdate,
+          socialLink: userData.socialLink,
+          coverUrl: userData.coverUrl,
+        }
       })
     })
   
@@ -53,3 +61,14 @@ export async function updateProfile(id: number, userData: { username: string; av
   
     return await response.json()
   }
+
+  // ฟังก์ชันดึงข้อมูลโปรไฟล์ผู้ใช้ 1 คน (ตาม ID)
+export async function getUserById(id: number) {
+  const response = await fetch(`${API_BASE_URL}/api/users/${id}`)
+
+  if (!response.ok) {
+    throw new Error('ไม่พบข้อมูลผู้ใช้งาน')
+  }
+
+  return await response.json()
+}
