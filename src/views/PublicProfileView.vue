@@ -127,6 +127,7 @@ async function handleCoverUpload(event: Event) {
         </div>
 
         <div v-if="activeTab === 'my-posts'" class="posts-grid">
+            
           <div v-if="userPosts.length === 0" class="empty-state">
             <p>ยังไม่มีทริปที่สร้างครับ 🎒</p>
             <router-link v-if="isMyProfile" to="/create-trip" class="btn-primary">เขียนทริปแรกเลย!</router-link>

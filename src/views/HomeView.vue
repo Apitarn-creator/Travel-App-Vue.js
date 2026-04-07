@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-// สังเกตว่าเราใช้ ../ เพื่อถอยออกจากโฟลเดอร์ views มาที่ src ก่อน
 import HeroSection from '../components/HeroSection.vue'
 import TripCard from '../components/TripCard.vue'
 import { getAllTrips, type Trip } from '../api/tripApi'
@@ -12,9 +11,19 @@ const loading = ref(false)
 async function handleSearch() {
   loading.value = true
   try {
-    trips.value = await getAllTrips(searchQuery.value)
-  } catch (e) { console.error('Fetch error:', e) }
-  finally { loading.value = false }
+    const data = await getAllTrips(searchQuery.value)
+    
+    if (Array.isArray(data)) {
+      trips.value = data.sort((a: any, b: any) => b.id - a.id)
+    } else {
+      trips.value = []
+    }
+  } catch (e) { 
+    console.error('Fetch error:', e)
+    trips.value = []
+  } finally { 
+    loading.value = false 
+  }
 }
 
 onMounted(handleSearch)
@@ -36,10 +45,20 @@ onMounted(handleSearch)
       </div>
 
       <div v-else class="trip-grid">
-        <TripCard v-for="trip in trips" :key="trip.id" :trip="trip" />
+        
+        <router-link 
+          v-for="trip in trips" 
+          :key="trip.id" 
+          :to="`/trip/${trip.id}`" 
+          class="clickable-card"
+        >
+          <TripCard :trip="trip" />
+        </router-link>
+
         <div v-if="trips.length === 0" class="no-results">
           ไม่พบข้อมูลทริปที่คุณต้องการ ลองค้นหาใหม่อีกครั้งนะ 🌴
         </div>
+
       </div>
     </main>
   </div>
@@ -53,18 +72,20 @@ onMounted(handleSearch)
 
 .trip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
 
+/* 💡 สไตล์ใหม่ เพื่อให้กล่องที่กดได้ดูเนียนสวย ไม่เป็นตัวหนังสือสีฟ้ามีขีดเส้นใต้ */
+.clickable-card {
+  text-decoration: none; 
+  color: inherit; 
+  display: block; 
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 12px;
+}
+.clickable-card:hover {
+  transform: translateY(-5px); /* เวลาเอาเมาส์ชี้ กล่องจะลอยขึ้นมานิดนึง */
+}
+
 .status-box { text-align: center; padding: 100px 0; color: #888; }
 .loader { border: 4px solid #f3f3f3; border-top: 4px solid #007bff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-.no-results { grid-column: 1 / -1; text-align: center; padding: 60px; background: white; border-radius: 20px; border: 2px dashed #eee; color: #888; font-size: 1.1rem; }
-
-/* --- โค้ดสำหรับมือถือ (จอเล็กกว่า 768px) --- */
-@media (max-width: 768px) {
-  .content { padding-top: 40px; padding-bottom: 50px; }
-  .section-title h2 { font-size: 1.5rem; }
-  .section-title { margin-bottom: 25px; }
-  
-  /* บังคับให้การ์ดเรียงแถวละ 1 ใบเท่านั้น */
-  .trip-grid { grid-template-columns: 1fr; gap: 20px; }
-}
+.no-results { grid-column: 1 / -1; text-align: center; padding: 50px; color: #666; font-size: 1.1rem; }
 </style>
