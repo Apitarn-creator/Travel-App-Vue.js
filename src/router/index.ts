@@ -51,6 +51,11 @@ const router = createRouter({
       name: 'create-trip',
       component: CreateTripView
     },
+    {
+      path: '/@:username',
+      name: 'public-profile',
+      component: () => import('../views/PublicProfileView.vue')
+    },
   ]
 })
 

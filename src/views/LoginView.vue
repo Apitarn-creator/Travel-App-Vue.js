@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { login } from '../api/userApi' // 👈 เรียกใช้ API ที่เราสร้างไว้
+import { login } from '../api/userApi'
 
 const router = useRouter()
 
@@ -19,27 +19,28 @@ async function handleLogin() {
 
   try {
     // 1. ส่งข้อมูลไปเช็คที่ Spring Boot
-    const userData = await login({
+    const data = await login({
       email: form.value.email,
       password: form.value.password
     })
 
-    // 2. จำข้อมูลผู้ใช้ลงในเบราว์เซอร์ (localStorage)
-    localStorage.setItem('user', JSON.stringify(userData))
+    // 2. 💡 เก็บ Token (บัตรพนักงาน) และข้อมูลผู้ใช้ลงใน localStorage
+    localStorage.setItem('token', data.token)
+    localStorage.setItem('user', JSON.stringify(data.user))
     
-    alert(`ยินดีต้อนรับคุณ ${userData.username} ! 🎒`)
+    // แจ้งเตือนโดยดึงชื่อจาก data.user
+    alert(`ยินดีต้อนรับคุณ ${data.user.username} ! 🎒`)
     
     // 3. พาไปหน้าแรก และบังคับให้หน้ารีเฟรช 1 รอบเพื่อให้ Navbar อัปเดต
     window.location.href = '/'
 
   } catch (error: any) {
-    errorMessage.value = error.message || 'เข้าสู่ระบบไม่สำเร็จ'
+    errorMessage.value = error.message || 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
   } finally {
     loading.value = false
   }
 }
 
-// ฟังก์ชันจำลองเมื่อกดปุ่ม Social
 function loginWithGoogle() {
   alert('ระบบกำลังเชื่อมต่อกับ Google...')
 }

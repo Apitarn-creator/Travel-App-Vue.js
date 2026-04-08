@@ -37,9 +37,14 @@ export async function login(credentials: { email: string; password?: string }) {
 
   // ฟังก์ชันสำหรับอัปเดตข้อมูลโปรไฟล์
   export async function updateProfile(id: number, userData: any) {
+    const token = localStorage.getItem('token') // 👈 ดึง Token
+  
     const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // 👈 แนบ Token ไปด้วย
+      },
       body: JSON.stringify({
         username: userData.username,
         avatarUrl: userData.avatarUrl,
@@ -49,7 +54,7 @@ export async function login(credentials: { email: string; password?: string }) {
           gender: userData.gender,
           birthdate: userData.birthdate,
           socialLink: userData.socialLink,
-          coverUrl: userData.coverUrl,
+          coverUrl: userData.coverUrl
         }
       })
     })
@@ -58,7 +63,6 @@ export async function login(credentials: { email: string; password?: string }) {
       const errorMessage = await response.text()
       throw new Error(errorMessage)
     }
-  
     return await response.json()
   }
 
@@ -70,5 +74,11 @@ export async function getUserById(id: number) {
     throw new Error('ไม่พบข้อมูลผู้ใช้งาน')
   }
 
+  return await response.json()
+}
+
+export async function getUserByUsername(username: string) {
+  const response = await fetch(`${API_BASE_URL}/api/users/username/${username}`)
+  if (!response.ok) throw new Error('ไม่พบข้อมูลผู้ใช้')
   return await response.json()
 }

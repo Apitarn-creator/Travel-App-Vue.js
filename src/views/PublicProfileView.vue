@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { getUserById, updateProfile } from '../api/userApi'
+import { getUserByUsername, updateProfile } from '../api/userApi'
 import { getTripsByUserId, getCommentedTripsByUserId } from '../api/tripApi'
 
 const route = useRoute()
-const targetUserId = Number(route.params.id) 
+const targetUsername = route.params.username as string
 
 const publicProfile = ref<any>(null)
 const isLoading = ref(true)
 const errorMessage = ref('')
 const currentUser = ref<any>(null)
+const targetUserId = ref<number | null>(null)
 
 // 💡 ตัวแปรสำหรับทริปของจริง และระบบแท็บ
 const userPosts = ref<any[]>([])
@@ -22,19 +23,21 @@ const showCoverModal = ref(false)
 const isUploading = ref(false)
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
-onMounted(async () => {
+    onMounted(async () => {
   const userString = localStorage.getItem('user')
   if (userString) currentUser.value = JSON.parse(userString)
 
   try {
     isLoading.value = true
-    // ดึงข้อมูล User
-    const data = await getUserById(targetUserId)
+    
+    // 💡 1. ดึงข้อมูล User จาก Username แทน
+    const data = await getUserByUsername(targetUsername)
     publicProfile.value = data
+    targetUserId.value = data.id // 💡 พอได้ข้อมูลมา ค่อยเอา ID ไปใช้ต่อ
 
-    // 💡 ดึงข้อมูลทริปของจริงจาก Database
-    userPosts.value = await getTripsByUserId(targetUserId)
-    commentedPosts.value = await getCommentedTripsByUserId(targetUserId)
+    // 💡 2. ดึงข้อมูลทริป โดยใช้ ID ที่ได้มา
+    userPosts.value = await getTripsByUserId(targetUserId.value!)
+    commentedPosts.value = await getCommentedTripsByUserId(targetUserId.value!)
 
   } catch (error: any) {
     errorMessage.value = 'ไม่พบผู้ใช้งานนี้ หรือลิงก์อาจไม่ถูกต้อง 😢'
@@ -43,7 +46,10 @@ onMounted(async () => {
   }
 })
 
-const isMyProfile = computed(() => currentUser.value?.id === targetUserId)
+// 💡 เช็คว่าเป็นโปรไฟล์เราเองไหม โดยเทียบจาก Username แทน
+const isMyProfile = computed(() => currentUser.value?.username === targetUsername)
+
+
 const userInitials = computed(() => publicProfile.value?.username ? publicProfile.value.username.charAt(0).toUpperCase() : '?')
 const displayCover = computed(() => publicProfile.value?.profile?.coverUrl || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop')
 
@@ -66,8 +72,9 @@ async function handleCoverUpload(event: Event) {
   const reader = new FileReader()
   reader.onload = async (e) => {
     try {
-      const base64Image = e.target?.result as string
-      await updateProfile(targetUserId, { username: publicProfile.value.username, coverUrl: base64Image })
+        const base64Image = e.target?.result as string
+      // 💡 เติม .value เข้าไปตรง targetUserId.value
+      await updateProfile(targetUserId.value!, { username: publicProfile.value.username, coverUrl: base64Image })
       if (!publicProfile.value.profile) publicProfile.value.profile = {}
       publicProfile.value.profile.coverUrl = base64Image
       showCoverModal.value = false
@@ -119,10 +126,10 @@ async function handleCoverUpload(event: Event) {
         
         <div class="profile-tabs">
           <button class="tab-btn" :class="{ 'active': activeTab === 'my-posts' }" @click="activeTab = 'my-posts'">
-            ทริปของฉัน ({{ userPosts.length }})
+            Created ({{ userPosts.length }})
           </button>
           <button class="tab-btn" :class="{ 'active': activeTab === 'commented' }" @click="activeTab = 'commented'">
-            ทริปที่ไปคอมเมนต์ ({{ commentedPosts.length }})
+            Comments ({{ commentedPosts.length }})
           </button>
         </div>
 
@@ -196,7 +203,11 @@ async function handleCoverUpload(event: Event) {
 .stat-label { font-size: 0.9rem; color: #64748b; }
 
 /* 💡 สไตล์สำหรับแท็บและกล่องโพสต์ใหม่ */
-.posts-section { margin-top: 40px; padding: 0 20px; }
+.posts-section { 
+  margin-top: 40px; 
+  padding: 0 5%; /* เผื่อระยะขอบซ้าย-ขวา 5% เหมือนหน้า Home */
+  max-width: 100% !important; /* ทลายขีดจำกัดความกว้างของคลาส .container */
+}
 .profile-tabs { display: flex; justify-content: center; gap: 20px; border-bottom: 2px solid #eee; margin-bottom: 30px; }
 .tab-btn { background: none; border: none; padding: 10px 20px; font-size: 1.1rem; font-weight: 600; color: #64748b; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s; font-family: inherit; }
 .tab-btn:hover { color: #007bff; }
@@ -205,7 +216,11 @@ async function handleCoverUpload(event: Event) {
 .empty-state { text-align: center; padding: 50px 20px; color: #666; width: 100%; grid-column: 1 / -1; }
 .btn-primary { display: inline-block; margin-top: 10px; background: #007bff; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; }
 
-.posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+.posts-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); /* ขนาดขั้นต่ำ 380px เหมือน Home */
+  gap: 30px; /* ขยายระยะห่างเป็น 30px เหมือน Home */
+}
 .post-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; cursor: pointer; text-decoration: none; color: inherit; transition: 0.2s; }
 .post-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
 .post-image-wrapper { height: 200px; overflow: hidden; }

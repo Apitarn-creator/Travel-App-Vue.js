@@ -13,6 +13,7 @@ onMounted(() => {
 
 function handleLogout() {
   localStorage.removeItem('user')
+  localStorage.removeItem('token') // 👈 เพิ่มบรรทัดนี้ เพื่อทิ้งบัตร
   currentUser.value = null
   window.location.href = '/login'
 }
@@ -62,8 +63,8 @@ function handleLogout() {
             
             <div class="divider"></div>
             
-            <router-link :to="`/user/${currentUser.id}`" class="dropdown-item">
-              <span class="icon">👤</span> หน้าโปรไฟล์ของฉัน
+            <router-link :to="`/@${currentUser.username}`" class="dropdown-item">
+              <span class="icon">👤</span> โปรไฟล์ของฉัน
             </router-link>
 
             <router-link to="/profile" class="dropdown-item">

@@ -41,9 +41,14 @@ export async function getCommentsByTripId(tripId: number) {
 
 // ส่งคอมเมนต์ใหม่
 export async function addComment(tripId: number, userId: number, content: string) {
+  const token = localStorage.getItem('token') // 👈 ดึง Token ออกมา
+
   const response = await fetch(`${API_BASE_URL}/api/trips/${tripId}/comments`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}` // 👈 แนบ Token ไปให้ รปภ. ตรวจ
+    },
     body: JSON.stringify({ userId: userId.toString(), content })
   })
   if (!response.ok) throw new Error('ไม่สามารถเพิ่มความเห็นได้')
@@ -52,9 +57,14 @@ export async function addComment(tripId: number, userId: number, content: string
 
 // ฟังก์ชันสร้างทริปใหม่
 export async function createTrip(tripData: any) {
+  const token = localStorage.getItem('token') // 👈 ดึง Token ออกมา
+
   const response = await fetch(`${API_BASE_URL}/api/trips`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}` // 👈 แนบ Token ไปด้วย
+    },
     body: JSON.stringify(tripData)
   })
 
@@ -62,7 +72,6 @@ export async function createTrip(tripData: any) {
     const errorMessage = await response.text()
     throw new Error(errorMessage)
   }
-
   return await response.json()
 }
 

@@ -65,12 +65,22 @@ onMounted(handleSearch)
 </template>
 
 <style scoped>
-.content { padding-top: 60px; padding-bottom: 80px; }
+.content { 
+  padding-top: 60px; 
+  padding-bottom: 80px; 
+  max-width: 100% !important; /* บังคับยกเลิก max-width ของ .container */
+  padding-left: 5%; /* เผื่อที่ว่างขอบซ้าย */
+  padding-right: 5%; /* เผื่อที่ว่างขอบขวา */
+}
 .section-title { margin-bottom: 40px; text-align: center; }
 .section-title h2 { font-size: 2rem; font-weight: 700; margin-bottom: 10px; color: #1a1a1a; }
 .title-underline { width: 60px; height: 4px; background: #007bff; margin: 0 auto; border-radius: 2px; }
 
-.trip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
+.trip-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); 
+  gap: 30px; 
+}
 
 /* 💡 สไตล์ใหม่ เพื่อให้กล่องที่กดได้ดูเนียนสวย ไม่เป็นตัวหนังสือสีฟ้ามีขีดเส้นใต้ */
 .clickable-card {

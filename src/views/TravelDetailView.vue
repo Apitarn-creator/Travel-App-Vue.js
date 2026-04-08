@@ -107,7 +107,7 @@ const formattedDate = computed(() => {
       <router-link to="/" class="btn-back">กลับหน้าแรก</router-link>
     </div>
 
-    <div v-else class="article-content">
+    <div v-else-if="trip" class="article-content">
       
       <div class="hero-section" :style="{ backgroundImage: `url(${coverPhoto})` }">
         <div class="hero-overlay"></div>
@@ -119,7 +119,11 @@ const formattedDate = computed(() => {
           <h1 class="title">{{ trip.title }}</h1>
           
           <div class="author-block">
-            <router-link :to="`/user/${trip.authorId}`" class="author-link" v-if="author">
+            <router-link :to="`/@${author.username}`" class="author-link" v-if="author">
+               </router-link>
+          </div>
+          
+          <router-link :to="`/@${author.username}`" class="author-link" v-if="author">
               <img v-if="author.avatarUrl" :src="author.avatarUrl" alt="Author" class="author-avatar" />
               <div v-else class="author-avatar placeholder">{{ author.username.charAt(0).toUpperCase() }}</div>
               <div class="author-info">
@@ -134,7 +138,7 @@ const formattedDate = computed(() => {
 
       <div class="container main-article">
         <div class="article-body">
-          <p class="description">{{ trip.description }}</p>
+          <p class="description">{{ trip?.description }}</p>  
         </div>
 
         <div class="gallery-section" v-if="galleryPhotos.length > 0">
@@ -183,7 +187,6 @@ const formattedDate = computed(() => {
       </div>
 
     </div>
-  </div>
 </template>
 
 <style scoped>
