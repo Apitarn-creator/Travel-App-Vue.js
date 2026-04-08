@@ -56,6 +56,11 @@ const router = createRouter({
       name: 'public-profile',
       component: () => import('../views/PublicProfileView.vue')
     },
+    {
+      path: '/category/:name',
+      name: 'category',
+      component: () => import('../views/CategoryView.vue')
+    },
   ]
 })
 
