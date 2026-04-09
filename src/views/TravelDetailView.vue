@@ -96,6 +96,27 @@ const formattedDate = computed(() => {
   const date = new Date(trip.value.createdAt)
   return date.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })
 })
+
+// 💡 ฟังก์ชันแปลง [IMAGE:X] ให้เป็นรูปภาพ
+const formattedDescription = computed(() => {
+  if (!trip.value?.description) return ''
+  
+  let html = trip.value.description
+  html = html.replace(/\n/g, '<br>') // แปลงการขึ้นบรรทัดใหม่
+  
+  // แปลง [IMAGE:X] เป็นรูปภาพ
+  html = html.replace(/\[IMAGE:(\d+)\]/g, (match: string, numberString: string) => {
+    const index = parseInt(numberString, 10)
+    const photoUrl = trip.value.photos[index]
+    
+    if (photoUrl) {
+      return `<div class="inline-image-wrapper"><img src="${photoUrl}" class="inline-image" alt="trip-photo-${index}" /></div>`
+    }
+    return ''
+  })
+  
+  return html
+})
 </script>
 
 <template>
@@ -138,7 +159,7 @@ const formattedDate = computed(() => {
 
       <div class="container main-article">
         <div class="article-body">
-          <p class="description">{{ trip?.description }}</p>  
+          <div class="description-html" v-html="formattedDescription"></div> 
         </div>
 
         <div class="gallery-section" v-if="galleryPhotos.length > 0">
@@ -166,7 +187,7 @@ const formattedDate = computed(() => {
           <div v-else class="login-prompt">
             กรุณา <router-link to="/login">เข้าสู่ระบบ</router-link> เพื่อแสดงความคิดเห็น
           </div>
-
+          
           <div class="comments-list">
             <div v-for="comment in comments" :key="comment.id" class="comment-item">
               <div class="avatar-small">
@@ -252,5 +273,25 @@ const formattedDate = computed(() => {
   .hero-section { height: 400px; }
   .title { font-size: 1.8rem; }
   .description { font-size: 1.05rem; }
+}
+
+/* 💡 สไตล์สำหรับข้อความและรูปภาพที่แทรกอยู่ตรงกลาง */
+.description-html { 
+  font-size: 1.3rem; 
+  line-height: 1.8; 
+  color: #444; 
+  white-space: normal; 
+  margin-bottom: 40px; 
+}
+:deep(.inline-image-wrapper) { 
+  margin: 10px 0; 
+  text-align: center; 
+}
+:deep(.inline-image) { 
+  max-width: 100%; 
+  max-height: 600px; 
+  border-radius: 10px; 
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+  object-fit: contain; 
 }
 </style>
