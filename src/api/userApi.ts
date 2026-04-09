@@ -82,3 +82,17 @@ export async function getUserByUsername(username: string) {
   if (!response.ok) throw new Error('ไม่พบข้อมูลผู้ใช้')
   return await response.json()
 }
+
+// 💡 เพิ่มฟังก์ชันส่ง Google Token ไปให้ Spring Boot
+export async function loginWithGoogleAPI(googleToken: string) {
+  const response = await fetch(`${API_BASE_URL}/api/users/google-login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token: googleToken })
+  })
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(errorText || 'ไม่สามารถล็อกอินด้วย Google ได้')
+  }
+  return await response.json()
+}
