@@ -137,7 +137,7 @@ const prevSlide = () => {
             <img :src="highlightTrips[activeSliderIndex]?.photos[0] || 'https://via.placeholder.com/800x400'" alt="highlight" />
             <div class="highlight-overlay">
               <h2>{{ highlightTrips[activeSliderIndex]?.title }}</h2>
-              <p>{{ (highlightTrips[activeSliderIndex] as any)?.description?.substring(0, 120) || 'คลิกเพื่อดูรายละเอียดเพิ่มเติม...' }}</p>
+              <p>{{ (highlightTrips[activeSliderIndex] as any)?.description?.replace(/\[IMAGE:\d+\]/g, '').trim().substring(0, 120) || 'คลิกเพื่อดูรายละเอียดเพิ่มเติม...' }}</p>
             </div>
           </router-link>
           

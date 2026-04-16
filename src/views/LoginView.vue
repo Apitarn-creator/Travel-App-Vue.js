@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { login, loginWithGoogleAPI } from '../api/userApi'
+import { login, loginWithGoogleAPI, loginWithFacebookAPI } from '../api/userApi'
+import { googleOneTap } from 'vue3-google-login'
+import Button from 'primevue/button';
 
 
 const router = useRouter()
@@ -47,9 +49,14 @@ const handleGoogleLoginSuccess = async (response: any) => {
   try {
     loading.value = true
     errorMessage.value = ''
-    
-    // 1. รับ Token จาก Google
+
     const googleToken = response.credential
+
+    if (!googleToken || typeof googleToken !== 'string') {
+      errorMessage.value = 'ไม่ได้รับ Token จาก Google กรุณาลองใหม่'
+      loading.value = false
+      return
+    }
     
     // 2. โยนไปให้ Spring Boot ตรวจสอบและออก JWT ของระบบเราให้
     const data = await loginWithGoogleAPI(googleToken)
@@ -67,8 +74,58 @@ const handleGoogleLoginSuccess = async (response: any) => {
   }
 }
 
-function loginWithGoogle() {
-  alert('ระบบกำลังเชื่อมต่อกับ Google...')
+// 💡 ฟังก์ชันทำงานเมื่อกดปุ่ม Facebook
+// 💡 1. แยกฟังก์ชัน async ออกมาไว้ข้างนอก
+const processFacebookLogin = async (fbToken: string) => {
+  try {
+    const data = await loginWithFacebookAPI(fbToken)
+    localStorage.setItem('token', data.token)
+    localStorage.setItem('user', JSON.stringify(data.user))
+    alert(`ยินดีต้อนรับคุณ ${data.user.username} ! 🎒`)
+    window.location.href = '/'
+  } catch (error: any) {
+    errorMessage.value = error.message
+    loading.value = false
+  }
+}
+
+// 💡 2. แก้ฟังก์ชันคลิกปุ่ม Facebook (ตัดคำว่า async ออกแล้ว!)
+const handleFacebookLogin = () => {
+  loading.value = true
+  errorMessage.value = ''
+  const FB = (window as any).FB
+
+  if (!FB) {
+    errorMessage.value = 'ระบบ Facebook ยังไม่พร้อมใช้งาน กรุณารีเฟรชหน้าเว็บ'
+    loading.value = false
+    return
+  }
+
+  // 💡 เอาคำว่า async ออก ใช้ (response: any) ธรรมดา
+  FB.login((response: any) => {
+    if (response.authResponse) {
+      // โยน Token ไปให้ฟังก์ชันด้านบนจัดการต่อ
+      processFacebookLogin(response.authResponse.accessToken)
+    } else {
+      loading.value = false
+    }
+  }, { scope: 'public_profile,email' })
+}
+
+// ✅ ใช้ googleOneTap() แทน <GoogleLogin> component
+// เพราะ googleOneTap ส่ง credential (ID Token) กลับมาตรงๆ ไม่ใช่ code หรือ access_token
+const handleGoogleButtonClick = async () => {
+  try {
+    loading.value = true
+    errorMessage.value = ''
+
+    const response = await googleOneTap()
+    await handleGoogleLoginSuccess(response)
+
+  } catch (error: any) {
+    errorMessage.value = error?.message || 'ยกเลิกการเข้าสู่ระบบด้วย Google'
+    loading.value = false
+  }
 }
 
 function loginWithFacebook() {
@@ -103,20 +160,28 @@ function loginWithFacebook() {
           {{ loading ? 'กำลังตรวจสอบ...' : 'เข้าสู่ระบบ' }}
         </button>
       </form>
-      
-      <div class="divider">
-        <span>หรือเข้าสู่ระบบด้วย</span>
+
+      <div class="social-login-group">
+          
+        <!-- ✅ ใช้ปุ่มธรรมดา + googleOneTap() แทน <GoogleLogin> component -->
+        <Button 
+          label="Google" 
+          icon="pi pi-google"
+          @click="handleGoogleButtonClick"
+          :disabled="loading"
+          style="background-color: #ffffff; color: #3c4043; border: 1px solid #dadce0; padding: 10px; font-weight: 600; border-radius: 12px; flex: 1;"
+        />
+
+        <Button 
+          label="Facebook" 
+          icon="pi pi-facebook" 
+          @click.prevent="handleFacebookLogin" 
+          style="background-color: #1877f2; border: none; padding: 10px; font-weight: 600; border-radius: 12px; flex: 1;"
+        />
+        
       </div>
 
-      <div class="social-login">
-        <div class="social-login">
-          <GoogleLogin :callback="handleGoogleLoginSuccess" prompt />
-        </div>
-        <button type="button" class="btn-social btn-facebook" @click="loginWithFacebook">
-          <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" fill="#fff"/></svg>
-          Facebook
-        </button>
-      </div>
+      
       
       <div class="login-footer">
         <p>ยังไม่มีบัญชีใช่ไหม? <router-link to="/register" class="register-link">สมัครสมาชิก</router-link></p>
@@ -169,5 +234,59 @@ function loginWithFacebook() {
   .login-card { padding: 30px 20px; }
   .login-header h2 { font-size: 1.6rem; }
   .social-login { flex-direction: column; gap: 10px; }
+}
+/* 💡 จัดหน้าตาปุ่ม Social Login */
+.social-login-group {
+  display: flex;
+  flex-direction: row; /* 👈 เปลี่ยนตรงนี้ให้เป็น row เพื่อให้อยู่บรรทัดเดียวกัน */
+  gap: 15px; /* ระยะห่างระหว่างปุ่ม 2 อัน */
+  margin-top: 20px;
+  border-top: 1px solid #eee;
+  padding-top: 25px;
+}
+
+.btn-social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.social-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+/* สไตล์เฉพาะปุ่ม Google */
+.btn-google {
+  background-color: #ffffff;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+}
+.btn-google:hover {
+  background-color: #f8f9fa;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+
+/* สไตล์เฉพาะปุ่ม Facebook */
+.btn-facebook {
+  background-color: #1877f2;
+  color: #ffffff;
+  border: none;
+}
+.btn-facebook:hover {
+  background-color: #166fe5;
+  box-shadow: 0 4px 10px rgba(24, 119, 242, 0.3);
+  transform: translateY(-2px);
 }
 </style>

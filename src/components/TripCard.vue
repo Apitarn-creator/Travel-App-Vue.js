@@ -1,6 +1,16 @@
 <script setup lang="ts">
 import type { Trip } from '../api/tripApi'
 defineProps<{ trip: Trip }>()
+
+// ตัด [IMAGE:0], [IMAGE:1], [IMAGE:2] ... ออกจาก description
+// แล้วตัดข้อความที่เหลือให้ไม่เกิน 100 ตัวอักษร
+function cleanDescription(text: string | null): string {
+  if (!text) return ''
+  return text
+    .replace(/\[IMAGE:\d+\]/g, '')  // ลบ [IMAGE:X] ทุกตัว
+    .replace(/\s+/g, ' ')           // ยุบ whitespace ที่เกินมา
+    .trim()
+}
 </script>
 
 <template>
@@ -14,7 +24,7 @@ defineProps<{ trip: Trip }>()
     <div class="card-body">
       <div class="meta">📅 {{ new Date(trip.created_at).toLocaleDateString('th-TH', { month: 'short', year: 'numeric' }) }}</div>
       <h3>{{ trip.title }}</h3>
-      <p class="description">{{ trip.description }}</p>
+      <p class="description">{{ cleanDescription(trip.description) }}</p>
       <div class="card-footer">
         <span class="location">📍 {{ trip.latitude ? 'ดูแผนที่' : 'ประเทศไทย' }}</span>
         <button class="btn-detail">อ่านต่อ</button>

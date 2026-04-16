@@ -28,7 +28,13 @@ function handleLogout() {
       
       <div class="menu">
         <router-link to="/" class="nav-link active">หน้าแรก</router-link>
-        <a href="#" class="nav-link">ค้นหาทริป</a>
+        <router-link to="/explore" class="nav-link" style="display:flex;align-items:center;gap:5px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+            <circle cx="12" cy="9" r="2.5"/>
+          </svg>
+          สำรวจ
+        </router-link>
         
         <div v-if="!currentUser" class="auth-buttons">
           <router-link to="/login" class="btn-text" style="text-decoration: none;">

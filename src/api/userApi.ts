@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? ''
 
 // ฟังก์ชันสำหรับส่งข้อมูลสมัครสมาชิก
 export async function register(userData: { username: string; email: string; password?: string }) {
@@ -93,6 +93,20 @@ export async function loginWithGoogleAPI(googleToken: string) {
   if (!response.ok) {
     const errorText = await response.text()
     throw new Error(errorText || 'ไม่สามารถล็อกอินด้วย Google ได้')
+  }
+  return await response.json()
+}
+
+// 💡 ฟังก์ชันส่ง Facebook Token ไปให้ Spring Boot
+export async function loginWithFacebookAPI(facebookToken: string) {
+  const response = await fetch(`${API_BASE_URL}/api/users/facebook-login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token: facebookToken })
+  })
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(errorText || 'ไม่สามารถล็อกอินด้วย Facebook ได้')
   }
   return await response.json()
 }
