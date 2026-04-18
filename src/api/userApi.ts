@@ -159,3 +159,40 @@ export async function loginWithFacebookAPI(facebookToken: string) {
   }
   return await response.json()
 }
+// ✅ Notification APIs
+export async function getNotifications() {
+  const token = localStorage.getItem('token')
+  if (!token) return []
+  const response = await fetch(`${API_BASE_URL}/api/notifications`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  if (!response.ok) return []
+  return await response.json()
+}
+
+export async function getUnreadCount() {
+  const token = localStorage.getItem('token')
+  if (!token) return 0
+  const response = await fetch(`${API_BASE_URL}/api/notifications/unread-count`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  if (!response.ok) return 0
+  const data = await response.json()
+  return data.count ?? 0
+}
+
+export async function markAllNotificationsRead() {
+  const token = localStorage.getItem('token')
+  await fetch(`${API_BASE_URL}/api/notifications/read-all`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+}
+
+export async function markNotificationRead(id: number) {
+  const token = localStorage.getItem('token')
+  await fetch(`${API_BASE_URL}/api/notifications/${id}/read`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+}

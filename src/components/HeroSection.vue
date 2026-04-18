@@ -1,6 +1,20 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
 defineProps<{ modelValue: string }>()
 defineEmits(['update:modelValue', 'search'])
+
+const router = useRouter()
+const localQuery = ref('')
+
+function goSearch() {
+  if (localQuery.value.trim()) {
+    router.push({ path: '/search', query: { q: localQuery.value.trim() } })
+  } else {
+    router.push('/search')
+  }
+}
 </script>
 
 <template>
@@ -11,14 +25,13 @@ defineEmits(['update:modelValue', 'search'])
       
       <div class="search-box">
         <span class="icon">🔍</span>
-        <input 
-          :value="modelValue" 
-          @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
-          type="text" 
+        <input
+          v-model="localQuery"
+          type="text"
           placeholder="ค้นหาชื่อทริป หรือจังหวัด..."
-          @keyup.enter="$emit('search')"
+          @keyup.enter="goSearch"
         >
-        <button @click="$emit('search')">ค้นหา</button>
+        <button @click="goSearch">ค้นหา</button>
       </div>
     </div>
   </header>
@@ -36,15 +49,12 @@ defineEmits(['update:modelValue', 'search'])
 .search-box button { background: #007bff; color: white; border: none; padding: 0 35px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; }
 .search-box button:hover { background: #0056b3; }
 
-/* --- โค้ดสำหรับมือถือ (จอเล็กกว่า 768px) --- */
 @media (max-width: 768px) {
   .hero { height: 380px; }
   .hero-content h1 { font-size: 2rem; }
   .hero-content p { font-size: 1rem; margin-bottom: 20px; }
-  
-  /* ปรับกล่องค้นหาให้เรียงเป็นแนวตั้ง */
   .search-box { flex-direction: column; padding: 12px; gap: 10px; border-radius: 20px; }
-  .icon { display: none; } /* ซ่อนไอคอนแว่นขยาย */
+  .icon { display: none; }
   .search-box input { padding: 10px; text-align: center; font-size: 1rem; }
   .search-box button { padding: 12px; width: 100%; border-radius: 10px; }
 }

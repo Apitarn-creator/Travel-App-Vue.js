@@ -1,19 +1,32 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { getUnreadCount } from '../api/userApi'
 
 const currentUser = ref<any>(null)
 const isDropdownOpen = ref(false)
+const unreadCount = ref(0)
+let pollInterval: any = null
 
 onMounted(() => {
   const userString = localStorage.getItem('user')
   if (userString) {
     currentUser.value = JSON.parse(userString)
+    fetchUnread()
+    // poll ทุก 30 วินาที
+    pollInterval = setInterval(fetchUnread, 30000)
   }
 })
 
+onUnmounted(() => { if (pollInterval) clearInterval(pollInterval) })
+
+async function fetchUnread() {
+  if (!localStorage.getItem('token')) return
+  unreadCount.value = await getUnreadCount()
+}
+
 function handleLogout() {
   localStorage.removeItem('user')
-  localStorage.removeItem('token') // 👈 เพิ่มบรรทัดนี้ เพื่อทิ้งบัตร
+  localStorage.removeItem('token')
   currentUser.value = null
   window.location.href = '/login'
 }
@@ -35,6 +48,12 @@ function handleLogout() {
           </svg>
           สำรวจ
         </router-link>
+        <router-link to="/search" class="nav-link" style="display:flex;align-items:center;gap:5px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          ค้นหา
+        </router-link>
         
         <div v-if="!currentUser" class="auth-buttons">
           <router-link to="/login" class="btn-text" style="text-decoration: none;">
@@ -45,7 +64,17 @@ function handleLogout() {
           </router-link>
         </div>
 
-        <div v-else class="user-menu-wrapper">
+        <div v-else class="right-actions">
+          <!-- 🔔 Notification Bell -->
+          <router-link to="/notifications" class="bell-btn" title="การแจ้งเตือน" @click="unreadCount = 0">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <span v-if="unreadCount > 0" class="badge">{{ unreadCount > 99 ? '99+' : unreadCount }}</span>
+          </router-link>
+
+          <div class="user-menu-wrapper">
           <div v-if="isDropdownOpen" @click="isDropdownOpen = false" class="dropdown-backdrop"></div>
 
           <button @click="isDropdownOpen = !isDropdownOpen" class="user-profile-btn" :class="{ 'active': isDropdownOpen }">
@@ -90,11 +119,11 @@ function handleLogout() {
             <button @click="handleLogout" class="dropdown-item text-red">
               <span class="icon">🚪</span> ออกจากระบบ
             </button>
-          </div>
-        </div>
-
-      </div>
-    </div>
+          </div><!-- end dropdown-menu -->
+          </div><!-- end user-menu-wrapper -->
+        </div><!-- end right-actions -->
+      </div><!-- end menu -->
+    </div><!-- end nav-content -->
   </nav>
 </template>
 
@@ -126,7 +155,24 @@ function handleLogout() {
 .btn-primary { background: #007bff; color: white; border: none; padding: 10px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; }
 .btn-primary:hover { background: #0056b3; transform: translateY(-2px); }
 
-.user-menu-wrapper { position: relative; margin-left: 20px; padding-left: 20px; border-left: 1px solid #eee; }
+.right-actions { display: flex; align-items: center; gap: 8px; }
+
+.bell-btn {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: 10px;
+  color: #555; text-decoration: none; transition: 0.2s;
+}
+.bell-btn:hover { background: #f3f4f6; color: #007bff; }
+.badge {
+  position: absolute; top: 4px; right: 4px;
+  background: #ef4444; color: white;
+  font-size: 0.65rem; font-weight: 700;
+  min-width: 16px; height: 16px;
+  border-radius: 8px; padding: 0 4px;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+}
 .user-profile-btn { display: flex; align-items: center; gap: 10px; background: transparent; border: none; cursor: pointer; padding: 6px 12px; border-radius: 10px; transition: 0.2s; font-family: inherit; }
 .user-profile-btn:hover, .user-profile-btn.active { background-color: #f8f9fa; }
 

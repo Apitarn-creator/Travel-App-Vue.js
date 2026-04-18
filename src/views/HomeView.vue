@@ -3,15 +3,18 @@ import { ref, onMounted, computed } from 'vue'
 import HeroSection from '../components/HeroSection.vue'
 import TripCard from '../components/TripCard.vue'
 import { getAllTrips, type Trip } from '../api/tripApi'
+import { getFollowingFeed } from '../api/userApi'
 
 const trips = ref<Trip[]>([])
+const feedTrips = ref<Trip[]>([])
 const loading = ref(true)
+const feedLoading = ref(false)
+const activeTab = ref<'discover' | 'following'>('discover')
+const currentUser = ref<any>(null)
 
-// ตัวแปรสำหรับระบบค้นหา
 const searchQuery = ref('')
-const isSearching = ref(false) 
+const isSearching = ref(false)
 
-// 🎯 ข้อมูลสำหรับแถบไอคอนหมวดหมู่ด้านบน
 const filterCategories = [
   { name: 'ทั้งหมด', icon: '🌍' },
   { name: 'ที่พัก', icon: '🏨' },
@@ -21,7 +24,6 @@ const filterCategories = [
 ]
 const activeCategory = ref('ทั้งหมด')
 
-// ข้อมูลหมวดหมู่แบบกล่องใหญ่ด้านล่าง
 const categories = [
   { name: 'ที่พัก', icon: '🏨', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&auto=format&fit=crop' },
   { name: 'ที่ท่องเที่ยว', icon: '⛰️', image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=500&auto=format&fit=crop' },
@@ -35,22 +37,32 @@ async function loadData(keyword: string = '') {
     const data = await getAllTrips(keyword)
     if (Array.isArray(data)) {
       trips.value = data.sort((a: any, b: any) => b.id - a.id)
-    } else {
-      trips.value = []
-    }
-  } finally { 
-    loading.value = false 
+    } else { trips.value = [] }
+  } finally { loading.value = false }
+}
+
+async function loadFeed() {
+  if (feedLoading.value) return
+  feedLoading.value = true
+  try {
+    feedTrips.value = await getFollowingFeed()
+  } catch { feedTrips.value = [] }
+  finally { feedLoading.value = false }
+}
+
+async function switchTab(tab: 'discover' | 'following') {
+  activeTab.value = tab
+  if (tab === 'following' && feedTrips.value.length === 0) {
+    await loadFeed()
   }
 }
 
 async function handleSearch() {
   if (searchQuery.value.trim() === '') {
-    isSearching.value = false
-    activeCategory.value = 'ทั้งหมด'
+    isSearching.value = false; activeCategory.value = 'ทั้งหมด'
     await loadData()
   } else {
-    isSearching.value = true
-    activeCategory.value = ''
+    isSearching.value = true; activeCategory.value = ''
     await loadData(searchQuery.value)
   }
 }
@@ -58,34 +70,28 @@ async function handleSearch() {
 async function selectCategory(catName: string) {
   activeCategory.value = catName
   if (catName === 'ทั้งหมด') {
-    searchQuery.value = ''
-    isSearching.value = false
-    await loadData()
+    searchQuery.value = ''; isSearching.value = false; await loadData()
   } else {
-    searchQuery.value = catName
-    isSearching.value = true
-    await loadData(catName)
+    searchQuery.value = catName; isSearching.value = true; await loadData(catName)
   }
 }
 
-onMounted(() => loadData())
+onMounted(() => {
+  const u = localStorage.getItem('user')
+  if (u) currentUser.value = JSON.parse(u)
+  loadData()
+})
 
-// ดึงข้อมูลสำหรับต่างๆ
 const latestTrips = computed(() => trips.value.slice(0, 8))
-
-// 🌟 ตัวแปรและฟังก์ชันสำหรับ Highlight Slider
 const activeSliderIndex = ref(0)
 const highlightTrips = computed(() => trips.value.slice(0, 6))
-
-const setSlide = (index: number) => {
-  activeSliderIndex.value = index
-}
+const setSlide = (index: number) => { activeSliderIndex.value = index }
 const nextSlide = () => {
-  if (highlightTrips.value.length === 0) return
+  if (!highlightTrips.value.length) return
   activeSliderIndex.value = (activeSliderIndex.value + 1) % highlightTrips.value.length
 }
 const prevSlide = () => {
-  if (highlightTrips.value.length === 0) return
+  if (!highlightTrips.value.length) return
   activeSliderIndex.value = (activeSliderIndex.value - 1 + highlightTrips.value.length) % highlightTrips.value.length
 }
 </script>
@@ -112,24 +118,66 @@ const prevSlide = () => {
     <div v-if="loading" class="loading">กำลังโหลดข้อมูล...</div>
 
     <div v-else class="content-container">
-      
+
+      <!-- ✅ Feed Tabs — แสดงเฉพาะเมื่อ login และไม่ได้ค้นหา -->
+      <div v-if="currentUser && !isSearching" class="feed-tabs">
+        <button
+          class="feed-tab"
+          :class="{ active: activeTab === 'discover' }"
+          @click="switchTab('discover')"
+        >
+          🌍 สำรวจทั้งหมด
+        </button>
+        <button
+          class="feed-tab"
+          :class="{ active: activeTab === 'following' }"
+          @click="switchTab('following')"
+        >
+          👥 คนที่ติดตาม
+        </button>
+      </div>
+
+      <!-- Search results -->
       <div v-if="isSearching">
         <div class="section-title text-center">
           <h2>ผลการค้นหา: "{{ searchQuery }}"</h2>
           <div class="title-underline"></div>
         </div>
-
         <div class="trip-grid">
           <router-link v-for="trip in trips" :key="trip.id" :to="`/trip/${trip.id}`" class="clickable-card">
             <TripCard :trip="trip" />
           </router-link>
         </div>
-
         <div v-if="trips.length === 0" class="no-results">
           ไม่พบทริปในหมวดหมู่นี้ ลองเลือกหมวดหมู่อื่น หรือ <a href="#" @click.prevent="selectCategory('ทั้งหมด')">กลับไปหน้าแนะนำ</a>
         </div>
       </div>
 
+      <!-- ✅ Following Feed -->
+      <div v-else-if="activeTab === 'following'">
+        <div v-if="feedLoading" class="loading">กำลังโหลด feed...</div>
+        <div v-else-if="feedTrips.length === 0" class="feed-empty">
+          <div class="feed-empty-inner">
+            <span style="font-size:3rem">👥</span>
+            <h3>ยังไม่มีทริปจากคนที่ติดตาม</h3>
+            <p>ลองกด "ติดตาม" คนที่คุณชอบสไตล์การเที่ยว แล้ว feed จะแสดงทริปของพวกเขาที่นี่</p>
+            <router-link to="/explore" class="btn-explore">🗺️ สำรวจหาคนน่าติดตาม</router-link>
+          </div>
+        </div>
+        <div v-else>
+          <div class="section-title">
+            <h2>จากคนที่คุณติดตาม</h2>
+            <div class="title-underline-left"></div>
+          </div>
+          <div class="posts-grid">
+            <router-link v-for="trip in feedTrips" :key="trip.id" :to="`/trip/${trip.id}`" class="clickable-card">
+              <TripCard :trip="trip" />
+            </router-link>
+          </div>
+        </div>
+      </div>
+
+      <!-- Discover (default) -->
       <div v-else>
         
         <div v-if="highlightTrips.length > 0" class="section-block highlight-slider-container">
@@ -195,7 +243,39 @@ const prevSlide = () => {
 <style scoped>
 .home-wrapper { padding-bottom: 100px; }
 .loading { text-align: center; padding: 100px; font-size: 1.2rem; color: #666; }
-.content-container { max-width: 1200px; margin: 30px auto 0; padding: 0 20px; } 
+.content-container { max-width: 1200px; margin: 30px auto 0; padding: 0 20px; }
+
+/* ✅ Feed Tabs */
+.feed-tabs {
+  display: flex; gap: 4px;
+  background: #f1f5f9; border-radius: 12px;
+  padding: 4px; margin-bottom: 28px;
+  width: fit-content;
+}
+.feed-tab {
+  padding: 9px 20px; border-radius: 9px;
+  border: none; background: transparent;
+  font-size: 0.9rem; font-weight: 600; color: #64748b;
+  cursor: pointer; transition: all 0.2s; font-family: inherit;
+}
+.feed-tab:hover { color: #374151; }
+.feed-tab.active { background: white; color: #007bff; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+/* ✅ Feed Empty */
+.feed-empty { padding: 60px 20px; }
+.feed-empty-inner {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 12px; text-align: center; max-width: 400px; margin: 0 auto;
+}
+.feed-empty-inner h3 { font-size: 1.2rem; font-weight: 700; color: #111827; margin: 0; }
+.feed-empty-inner p { color: #6b7280; font-size: 0.95rem; margin: 0; line-height: 1.6; }
+.btn-explore {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 8px; padding: 10px 20px; border-radius: 10px;
+  background: #007bff; color: white; text-decoration: none;
+  font-weight: 600; font-size: 0.9rem; transition: 0.2s;
+}
+.btn-explore:hover { background: #0056b3; transform: translateY(-1px); } 
 
 /* แถบไอคอนหมวดหมู่ด้านบน */
 .category-filter-bar { border-bottom: 1px solid #eaeaea; background: white; margin-bottom: 20px; padding: 12px 40px 0; }
