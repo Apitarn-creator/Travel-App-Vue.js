@@ -5,6 +5,7 @@ import { getUnreadCount } from '../api/userApi'
 const currentUser = ref<any>(null)
 const isDropdownOpen = ref(false)
 const unreadCount = ref(0)
+const isDark = ref(false)
 let pollInterval: any = null
 
 onMounted(() => {
@@ -12,8 +13,13 @@ onMounted(() => {
   if (userString) {
     currentUser.value = JSON.parse(userString)
     fetchUnread()
-    // poll ทุก 30 วินาที
     pollInterval = setInterval(fetchUnread, 30000)
+  }
+  // โหลด theme จาก localStorage
+  const saved = localStorage.getItem('theme')
+  if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    isDark.value = true
+    document.documentElement.setAttribute('data-theme', 'dark')
   }
 })
 
@@ -22,6 +28,12 @@ onUnmounted(() => { if (pollInterval) clearInterval(pollInterval) })
 async function fetchUnread() {
   if (!localStorage.getItem('token')) return
   unreadCount.value = await getUnreadCount()
+}
+
+function toggleDark() {
+  isDark.value = !isDark.value
+  document.documentElement.setAttribute('data-theme', isDark.value ? 'dark' : 'light')
+  localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
 }
 
 function handleLogout() {
@@ -65,6 +77,12 @@ function handleLogout() {
         </div>
 
         <div v-else class="right-actions">
+          <!-- 🌙 Dark mode toggle -->
+          <button class="dark-toggle" @click="toggleDark" :title="isDark ? 'โหมดสว่าง' : 'โหมดมืด'">
+            <span v-if="isDark">☀️</span>
+            <span v-else>🌙</span>
+          </button>
+
           <!-- 🔔 Notification Bell -->
           <router-link to="/notifications" class="bell-btn" title="การแจ้งเตือน" @click="unreadCount = 0">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -129,73 +147,48 @@ function handleLogout() {
 
 <style scoped>
 .navbar {
-  background: #ffffff;
-  border-bottom: 1px solid #f0f0f0;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  height: 72px;
-  display: flex;
-  align-items: center;
+  background: var(--navbar-bg);
+  border-bottom: 1px solid var(--navbar-border);
+  position: sticky; top: 0; z-index: 1000;
+  height: 72px; display: flex; align-items: center;
+  transition: background 0.3s;
 }
-.nav-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 0 40px;
-}
-.logo { font-size: 1.6rem; font-weight: 800; color: #1a1a1a; letter-spacing: -1px; }
-.logo span { color: #007bff; }
+.nav-content { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0 40px; }
+.logo { font-size: 1.6rem; font-weight: 800; color: var(--text-primary); letter-spacing: -1px; }
+.logo span { color: var(--accent); }
 .menu { display: flex; align-items: center; gap: 30px; }
-.nav-link { text-decoration: none; color: #666; font-weight: 500; transition: 0.2s; }
-.nav-link.active, .nav-link:hover { color: #007bff; }
+.nav-link { text-decoration: none; color: var(--text-secondary); font-weight: 500; transition: 0.2s; }
+.nav-link.active, .nav-link:hover { color: var(--accent); }
 .auth-buttons { display: flex; gap: 15px; align-items: center; margin-left: 20px; }
-.btn-text { background: none; border: none; color: #444; font-weight: 600; cursor: pointer; }
-.btn-primary { background: #007bff; color: white; border: none; padding: 10px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; }
-.btn-primary:hover { background: #0056b3; transform: translateY(-2px); }
-
-.right-actions { display: flex; align-items: center; gap: 8px; }
-
-.bell-btn {
-  position: relative;
-  display: flex; align-items: center; justify-content: center;
-  width: 40px; height: 40px; border-radius: 10px;
-  color: #555; text-decoration: none; transition: 0.2s;
-}
-.bell-btn:hover { background: #f3f4f6; color: #007bff; }
-.badge {
-  position: absolute; top: 4px; right: 4px;
-  background: #ef4444; color: white;
-  font-size: 0.65rem; font-weight: 700;
-  min-width: 16px; height: 16px;
-  border-radius: 8px; padding: 0 4px;
-  display: flex; align-items: center; justify-content: center;
-  line-height: 1;
-}
+.btn-text { background: none; border: none; color: var(--text-secondary); font-weight: 600; cursor: pointer; font-family: inherit; }
+.btn-primary { background: var(--accent); color: white; border: none; padding: 10px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+.btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
+.right-actions { display: flex; align-items: center; gap: 4px; }
+.dark-toggle { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; background: none; border: none; cursor: pointer; font-size: 1.1rem; transition: background 0.2s; }
+.dark-toggle:hover { background: var(--bg-tertiary); }
+.bell-btn { position: relative; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; color: var(--text-secondary); text-decoration: none; transition: 0.2s; }
+.bell-btn:hover { background: var(--bg-tertiary); color: var(--accent); }
+.badge { position: absolute; top: 4px; right: 4px; background: #ef4444; color: white; font-size: 0.65rem; font-weight: 700; min-width: 16px; height: 16px; border-radius: 8px; padding: 0 4px; display: flex; align-items: center; justify-content: center; }
+.user-menu-wrapper { position: relative; margin-left: 8px; padding-left: 16px; border-left: 1px solid var(--border-color); }
 .user-profile-btn { display: flex; align-items: center; gap: 10px; background: transparent; border: none; cursor: pointer; padding: 6px 12px; border-radius: 10px; transition: 0.2s; font-family: inherit; }
-.user-profile-btn:hover, .user-profile-btn.active { background-color: #f8f9fa; }
-
-.avatar-square { width: 38px; height: 38px; border-radius: 8px; object-fit: cover; border: 1px solid #eaeaea; }
-.avatar-square.placeholder { background-color: #007bff; color: white; display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 1.2rem; border: none; }
-.username { font-weight: 600; color: #333; font-size: 0.95rem; }
-.chevron { color: #888; transition: transform 0.3s ease; }
+.user-profile-btn:hover, .user-profile-btn.active { background: var(--bg-tertiary); }
+.avatar-square { width: 38px; height: 38px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-color); }
+.avatar-square.placeholder { background: var(--accent); color: white; display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 1.2rem; border: none; }
+.username { font-weight: 600; color: var(--text-primary); font-size: 0.95rem; }
+.chevron { color: var(--text-muted); transition: transform 0.3s ease; }
 .chevron.rotate { transform: rotate(180deg); }
-
-.dropdown-menu { position: absolute; top: calc(100% + 10px); right: 0; background: white; min-width: 220px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border: 1px solid #f0f0f0; padding: 8px 0; z-index: 1001; animation: slideDown 0.2s ease-out forwards; }
+.dropdown-menu { position: absolute; top: calc(100% + 10px); right: 0; background: var(--bg-card); min-width: 220px; border-radius: 12px; box-shadow: var(--shadow-lg); border: 1px solid var(--border-color); padding: 8px 0; z-index: 1001; animation: slideDown 0.2s ease-out forwards; }
 @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 .dropdown-header { padding: 12px 20px; }
-.dropdown-header .role { margin: 0 0 2px 0; font-weight: 600; color: #333; font-size: 0.95rem; }
-.dropdown-header .email { margin: 0; color: #888; font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; }
-
-.divider { height: 1px; background: #f0f0f0; margin: 8px 0; }
-.dropdown-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 20px; background: none; border: none; text-align: left; font-size: 0.95rem; color: #444; cursor: pointer; text-decoration: none; transition: 0.2s; font-family: inherit; box-sizing: border-box; }
-.dropdown-item:hover { background-color: #f8f9fa; color: #007bff; }
+.dropdown-header .role { margin: 0 0 2px 0; font-weight: 600; color: var(--text-primary); font-size: 0.95rem; }
+.dropdown-header .email { margin: 0; color: var(--text-muted); font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; }
+.divider { height: 1px; background: var(--border-color); margin: 8px 0; }
+.dropdown-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 20px; background: none; border: none; text-align: left; font-size: 0.95rem; color: var(--text-secondary); cursor: pointer; text-decoration: none; transition: 0.2s; font-family: inherit; box-sizing: border-box; }
+.dropdown-item:hover { background: var(--bg-hover); color: var(--accent); }
 .dropdown-item .icon { font-size: 1.1rem; }
 .dropdown-item.text-red { color: #dc3545; }
-.dropdown-item.text-red:hover { background-color: #fff5f5; color: #dc3545; }
+.dropdown-item.text-red:hover { background: #fff5f5; color: #dc3545; }
 .dropdown-backdrop { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1000; }
-
 @media (max-width: 768px) {
   .nav-content { padding: 0 16px; }
   .logo { font-size: 1.4rem; }

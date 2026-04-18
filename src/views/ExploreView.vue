@@ -333,7 +333,7 @@ onUnmounted(() => {
 <style scoped>
 .explore-page {
   min-height: calc(100vh - 72px);
-  background: #f8fafc;
+  background: var(--bg-secondary);
   display: flex;
   flex-direction: column;
   padding: 28px 32px 0;
@@ -345,11 +345,11 @@ onUnmounted(() => {
 .explore-title {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
   margin: 0 0 4px;
 }
 .explore-subtitle {
-  color: #6b7280;
+  color: var(--text-secondary);
   font-size: 0.95rem;
   margin: 0;
 }
@@ -377,15 +377,15 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   min-height: 580px;
-  background: #e8f0fe;
+  background: var(--accent-light);
 }
 
 .map-loading {
   position: absolute; inset: 0;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  background: #f1f5f9;
-  gap: 12px; color: #6b7280;
+  background: var(--bg-tertiary);
+  gap: 12px; color: var(--text-secondary);
 }
 
 .loading-spinner {
@@ -401,7 +401,7 @@ onUnmounted(() => {
 .map-search-bar {
   position: absolute; top: 16px; left: 16px;
   z-index: 1000;
-  background: white;
+  background: var(--bg-card);
   border-radius: 10px;
   padding: 10px 14px;
   display: flex; align-items: center; gap: 8px;
@@ -410,33 +410,33 @@ onUnmounted(() => {
 }
 .map-search-input {
   border: none; outline: none;
-  font-size: 0.9rem; color: #374151;
+  font-size: 0.9rem; color: var(--text-primary);
   width: 100%; background: transparent;
   font-family: inherit;
 }
-.map-search-input::placeholder { color: #9ca3af; }
+.map-search-input::placeholder { color: var(--text-muted); }
 
 .layer-btn {
   position: absolute; top: 16px; right: 16px;
   z-index: 1000;
-  background: white;
+  background: var(--bg-card);
   border: none; border-radius: 10px;
   padding: 10px 16px;
   display: flex; align-items: center; gap: 6px;
-  font-size: 0.9rem; font-weight: 600; color: #374151;
+  font-size: 0.9rem; font-weight: 600; color: var(--text-primary);
   cursor: pointer;
   box-shadow: 0 2px 10px rgba(0,0,0,0.12);
   transition: background 0.2s;
 }
-.layer-btn:hover { background: #f9fafb; }
+.layer-btn:hover { background: var(--bg-tertiary); }
 
 .locate-btn {
   position: absolute; bottom: 56px; right: 16px;
   z-index: 1000;
-  background: white; border: none;
+  background: var(--bg-card); border: none;
   width: 40px; height: 40px; border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; color: #374151;
+  cursor: pointer; color: var(--text-primary);
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   transition: background 0.2s;
 }
@@ -454,7 +454,7 @@ onUnmounted(() => {
 .side-panel {
   width: 360px;
   flex-shrink: 0;
-  background: white;
+  background: var(--bg-card);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.08);
   display: flex; flex-direction: column;
@@ -464,13 +464,13 @@ onUnmounted(() => {
 .side-panel-hint {
   width: 360px;
   flex-shrink: 0;
-  background: white;
+  background: var(--bg-card);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.08);
   display: flex; align-items: center; justify-content: center;
 }
 .hint-inner {
-  text-align: center; color: #9ca3af;
+  text-align: center; color: var(--text-muted);
   display: flex; flex-direction: column; align-items: center; gap: 12px;
   padding: 40px 20px;
   line-height: 1.6;
@@ -485,19 +485,19 @@ onUnmounted(() => {
   display: flex; align-items: center; gap: 8px;
 }
 .panel-title {
-  font-size: 1.15rem; font-weight: 700; color: #111827; margin: 0;
+  font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin: 0;
 }
 .panel-count {
   padding: 6px 20px 12px;
-  font-size: 0.85rem; color: #6b7280; margin: 0;
+  font-size: 0.85rem; color: var(--text-secondary); margin: 0;
 }
 .close-btn {
   background: none; border: none; cursor: pointer;
-  color: #9ca3af; padding: 4px; border-radius: 6px;
+  color: var(--text-muted); padding: 4px; border-radius: 6px;
   display: flex; align-items: center;
   transition: color 0.2s, background 0.2s;
 }
-.close-btn:hover { color: #374151; background: #f3f4f6; }
+.close-btn:hover { color: var(--text-primary); background: var(--bg-tertiary); }
 
 /* Cards */
 .panel-cards {
@@ -506,7 +506,7 @@ onUnmounted(() => {
 }
 .panel-cards::-webkit-scrollbar { width: 4px; }
 .panel-cards::-webkit-scrollbar-track { background: transparent; }
-.panel-cards::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 2px; }
+.panel-cards::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }
 
 .trip-card {
   border-radius: 12px;
@@ -523,7 +523,7 @@ onUnmounted(() => {
 .trip-photo {
   position: relative;
   height: 180px; overflow: hidden;
-  background: #f3f4f6;
+  background: var(--bg-tertiary);
 }
 .trip-img {
   width: 100%; height: 100%; object-fit: cover;
@@ -549,12 +549,12 @@ onUnmounted(() => {
   padding: 10px 12px 12px;
 }
 .trip-title {
-  font-size: 0.95rem; font-weight: 600; color: #111827;
+  font-size: 0.95rem; font-weight: 600; color: var(--text-primary);
   margin: 0 0 6px; line-height: 1.4;
 }
 .trip-author {
   display: flex; align-items: center; gap: 4px;
-  font-size: 0.8rem; color: #9ca3af;
+  font-size: 0.8rem; color: var(--text-muted);
 }
 
 /* Transition */

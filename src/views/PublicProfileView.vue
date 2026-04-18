@@ -236,27 +236,27 @@ async function handleCoverUpload(event: Event) {
 
 <style scoped>
 /* สไตล์เดิมบางส่วนขอตัดออกเพื่อไม่ให้โค้ดยาวเกินไป ให้คงของเก่าไว้ได้เลยนะครับ แล้วเพิ่มสไตล์ใหม่ด้านล่างนี้ */
-.public-profile-page { background-color: #f8fafc; min-height: calc(100vh - 72px); padding-bottom: 50px; font-family: 'Kanit', sans-serif; }
-.loading-state, .error-state { text-align: center; padding: 100px 20px; font-size: 1.2rem; color: #666; }
+.public-profile-page { background-color: var(--bg-secondary); min-height: calc(100vh - 72px); padding-bottom: 50px; font-family: 'Kanit', sans-serif; }
+.loading-state, .error-state { text-align: center; padding: 100px 20px; font-size: 1.2rem; color: var(--text-secondary); }
 .btn-back { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 8px; }
 
-.cover-container { width: 100%; height: 320px; background-color: #e2e8f0; position: relative; }
+.cover-container { width: 100%; height: 320px; background-color: var(--bg-tertiary); position: relative; }
 .cover-image { width: 100%; height: 100%; object-fit: cover; }
 .btn-edit-cover { position: absolute; bottom: 20px; right: 20px; background: rgba(255, 255, 255, 0.9); border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
 
 .profile-info-section { position: relative; margin-top: -80px; padding: 0 20px; }
-.profile-card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; text-align: center; }
+.profile-card { background: var(--bg-card); border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; text-align: center; }
 .avatar-wrapper { margin-top: -80px; margin-bottom: 15px; }
 .profile-avatar { width: 160px; height: 160px; border-radius: 50%; object-fit: cover; border: 5px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
 .profile-avatar.placeholder { background-color: #007bff; color: white; display: flex; justify-content: center; align-items: center; font-size: 4rem; font-weight: bold; }
-.user-details .nickname { font-size: 1.8rem; font-weight: 700; color: #111; margin: 0 0 5px 0; }
-.user-details .username { font-size: 1rem; color: #64748b; margin: 0 0 15px 0; }
-.user-details .bio { font-size: 1rem; color: #475569; max-width: 500px; margin: 0 auto 20px auto; line-height: 1.5; }
+.user-details .nickname { font-size: 1.8rem; font-weight: 700; color: var(--text-primary); margin: 0 0 5px 0; }
+.user-details .username { font-size: 1rem; color: var(--text-muted); margin: 0 0 15px 0; }
+.user-details .bio { font-size: 1rem; color: var(--text-secondary); max-width: 500px; margin: 0 auto 20px auto; line-height: 1.5; }
 
 .profile-stats { display: flex; gap: 30px; justify-content: center; padding-top: 20px; border-top: 1px solid #f1f5f9; width: 100%; }
 .stat-box { display: flex; flex-direction: column; }
-.stat-number { font-size: 1.2rem; font-weight: 700; color: #0f172a; }
-.stat-label { font-size: 0.9rem; color: #64748b; }
+.stat-number { font-size: 1.2rem; font-weight: 700; color: var(--text-primary); }
+.stat-label { font-size: 0.9rem; color: var(--text-muted); }
 
 /* 💡 สไตล์สำหรับแท็บและกล่องโพสต์ใหม่ */
 .posts-section { 
@@ -265,11 +265,11 @@ async function handleCoverUpload(event: Event) {
   max-width: 100% !important; /* ทลายขีดจำกัดความกว้างของคลาส .container */
 }
 .profile-tabs { display: flex; justify-content: center; gap: 20px; border-bottom: 2px solid #eee; margin-bottom: 30px; }
-.tab-btn { background: none; border: none; padding: 10px 20px; font-size: 1.1rem; font-weight: 600; color: #64748b; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s; font-family: inherit; }
+.tab-btn { background: none; border: none; padding: 10px 20px; font-size: 1.1rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s; font-family: inherit; }
 .tab-btn:hover { color: #007bff; }
 .tab-btn.active { color: #007bff; border-bottom-color: #007bff; }
 
-.empty-state { text-align: center; padding: 50px 20px; color: #666; width: 100%; grid-column: 1 / -1; }
+.empty-state { text-align: center; padding: 50px 20px; color: var(--text-secondary); width: 100%; grid-column: 1 / -1; }
 .btn-primary { display: inline-block; margin-top: 10px; background: #007bff; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; }
 
 /* ✅ Follow button */
@@ -277,7 +277,7 @@ async function handleCoverUpload(event: Event) {
   display: inline-flex; align-items: center; gap: 8px;
   margin-top: 16px; padding: 10px 24px; border-radius: 20px;
   font-size: 0.95rem; font-weight: 600; cursor: pointer;
-  border: 2px solid #007bff; color: #007bff; background: white;
+  border: 2px solid #007bff; color: #007bff; background: var(--bg-card);
   transition: all 0.2s; font-family: inherit;
 }
 .btn-follow:hover:not(:disabled) { background: #007bff; color: white; transform: translateY(-1px); }
@@ -290,7 +290,7 @@ async function handleCoverUpload(event: Event) {
   display: inline-flex; align-items: center; gap: 6px;
   margin-top: 16px; padding: 9px 20px; border-radius: 20px;
   font-size: 0.9rem; font-weight: 600; cursor: pointer;
-  border: 1.5px solid #e2e8f0; color: #475569; background: white;
+  border: 1.5px solid #e2e8f0; color: var(--text-secondary); background: var(--bg-card);
   text-decoration: none; transition: all 0.2s;
 }
 .btn-edit-profile:hover { border-color: #007bff; color: #007bff; }
@@ -300,19 +300,19 @@ async function handleCoverUpload(event: Event) {
   grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); /* ขนาดขั้นต่ำ 380px เหมือน Home */
   gap: 30px; /* ขยายระยะห่างเป็น 30px เหมือน Home */
 }
-.post-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; cursor: pointer; text-decoration: none; color: inherit; transition: 0.2s; }
+.post-card { background: var(--bg-card); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border-light); cursor: pointer; text-decoration: none; color: inherit; transition: 0.2s; }
 .post-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
 .post-image-wrapper { height: 200px; overflow: hidden; }
 .post-image { width: 100%; height: 100%; object-fit: cover; }
 .post-content { padding: 16px; }
-.post-title { font-size: 1.1rem; font-weight: 600; margin: 0 0 10px 0; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.post-meta { font-size: 0.85rem; color: #64748b; }
+.post-title { font-size: 1.1rem; font-weight: 600; margin: 0 0 10px 0; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.post-meta { font-size: 0.85rem; color: var(--text-muted); }
 
 /* Popup Styles */
 .modal-backdrop { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 2000; }
-.modal-content { background: white; padding: 30px; border-radius: 16px; width: 90%; max-width: 400px; text-align: center; }
+.modal-content { background: var(--bg-card); padding: 30px; border-radius: 16px; width: 90%; max-width: 400px; text-align: center; }
 .btn-upload-modal { width: 100%; background: #007bff; color: white; border: none; padding: 12px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; }
-.btn-cancel { width: 100%; background: #f1f5f9; border: none; padding: 12px; border-radius: 8px; cursor: pointer; }
+.btn-cancel { width: 100%; background: var(--bg-tertiary); border: none; padding: 12px; border-radius: 8px; cursor: pointer; }
 
 @media (max-width: 640px) {
   .profile-avatar { width: 120px; height: 120px; }

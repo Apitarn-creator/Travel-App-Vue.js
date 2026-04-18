@@ -242,7 +242,7 @@ const prevSlide = () => {
 
 <style scoped>
 .home-wrapper { padding-bottom: 100px; }
-.loading { text-align: center; padding: 100px; font-size: 1.2rem; color: #666; }
+.loading { text-align: center; padding: 100px; font-size: 1.2rem; color: var(--text-secondary); }
 .content-container { max-width: 1200px; margin: 30px auto 0; padding: 0 20px; }
 
 /* ✅ Feed Tabs */
@@ -259,7 +259,7 @@ const prevSlide = () => {
   cursor: pointer; transition: all 0.2s; font-family: inherit;
 }
 .feed-tab:hover { color: #374151; }
-.feed-tab.active { background: white; color: #007bff; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+.feed-tab.active { background: var(--bg-card); color: #007bff; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
 
 /* ✅ Feed Empty */
 .feed-empty { padding: 60px 20px; }
@@ -267,8 +267,8 @@ const prevSlide = () => {
   display: flex; flex-direction: column; align-items: center;
   gap: 12px; text-align: center; max-width: 400px; margin: 0 auto;
 }
-.feed-empty-inner h3 { font-size: 1.2rem; font-weight: 700; color: #111827; margin: 0; }
-.feed-empty-inner p { color: #6b7280; font-size: 0.95rem; margin: 0; line-height: 1.6; }
+.feed-empty-inner h3 { font-size: 1.2rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+.feed-empty-inner p { color: var(--text-secondary); font-size: 0.95rem; margin: 0; line-height: 1.6; }
 .btn-explore {
   display: inline-flex; align-items: center; gap: 6px;
   margin-top: 8px; padding: 10px 20px; border-radius: 10px;
@@ -278,18 +278,18 @@ const prevSlide = () => {
 .btn-explore:hover { background: #0056b3; transform: translateY(-1px); } 
 
 /* แถบไอคอนหมวดหมู่ด้านบน */
-.category-filter-bar { border-bottom: 1px solid #eaeaea; background: white; margin-bottom: 20px; padding: 12px 40px 0; }
+.category-filter-bar { border-bottom: 1px solid var(--border-color); background: var(--bg-card); margin-bottom: 20px; padding: 12px 40px 0; }
 .filter-scroll { display: flex; justify-content: center; gap: 40px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
 .filter-scroll::-webkit-scrollbar { display: none; }
 .filter-btn { display: flex; flex-direction: column; align-items: center; gap: 8px; background: none; border: none; cursor: pointer; opacity: 0.5; transition: all 0.2s ease; padding-bottom: 10px; border-bottom: 2px solid transparent; min-width: 60px; outline: none; }
 .filter-btn:hover { opacity: 1; transform: scale(1.05); }
 .filter-btn.active { opacity: 1; border-bottom: 2px solid #1a1a1a; }
 .filter-icon { font-size: 1.8rem; }
-.filter-text { font-size: 0.95rem; font-weight: 600; white-space: nowrap; color: #1a1a1a; }
+.filter-text { font-size: 0.95rem; font-weight: 600; white-space: nowrap; color: var(--text-primary); }
 
 /* Typography */
 .section-title { margin-bottom: 30px; }
-.section-title h2 { font-size: 2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 10px; }
+.section-title h2 { font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 10px; }
 .text-center { text-align: center; }
 .title-underline { width: 60px; height: 4px; background: #007bff; border-radius: 2px; margin: 0 auto; }
 .title-underline-left { width: 60px; height: 4px; background: #007bff; border-radius: 2px; margin: 0; }
@@ -298,7 +298,7 @@ const prevSlide = () => {
 /* 🌟 สไตล์สำหรับ Highlight Slider */
 .highlight-slider-container { 
   border: 1px solid #eaeaea; 
-  background: white; 
+  background: var(--bg-card); 
   border-radius: 8px; 
   overflow: hidden; 
   box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
@@ -342,7 +342,7 @@ const prevSlide = () => {
 .trip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
 .clickable-card { text-decoration: none; color: inherit; display: block; transition: transform 0.2s ease; height: 100%; }
 .clickable-card:hover { transform: translateY(-5px); }
-.no-results { text-align: center; padding: 50px; color: #888; font-size: 1.1rem; background: #f8f9fa; border-radius: 12px; margin-top: 20px;}
+.no-results { text-align: center; padding: 50px; color: #888; font-size: 1.1rem; background: var(--bg-secondary); border-radius: 12px; margin-top: 20px;}
 .no-results a { color: #007bff; text-decoration: underline; cursor: pointer; }
 
 /* 🌟 บทความล่าสุดแบบ Grid (แบบกล่องที่ขอเข้ามาใหม่) */

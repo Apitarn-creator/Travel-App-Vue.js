@@ -327,8 +327,8 @@ const formattedDescription = computed(() => {
 </template>
 
 <style scoped>
-.travel-detail-page { background: #fcfdfd; min-height: calc(100vh - 72px); padding-bottom: 60px; }
-.loading-state, .error-state { text-align: center; padding: 100px 20px; font-size: 1.2rem; color: #666; }
+.travel-detail-page { background: var(--bg-secondary); min-height: calc(100vh - 72px); padding-bottom: 60px; }
+.loading-state, .error-state { text-align: center; padding: 100px 20px; font-size: 1.2rem; color: var(--text-secondary); }
 .btn-back { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 8px; }
 
 /* Hero */
@@ -384,48 +384,48 @@ const formattedDescription = computed(() => {
 
 /* Article */
 .article-col { min-width: 0; }
-.description-html { font-size: 1.15rem; line-height: 1.9; color: #333; margin-bottom: 40px; }
+.description-html { font-size: 1.15rem; line-height: 1.9; color: var(--text-primary); margin-bottom: 40px; }
 :deep(.inline-image-wrapper) { margin: 20px 0; text-align: center; }
 :deep(.inline-image) { max-width: 100%; max-height: 600px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); object-fit: contain; }
 
-.section-title { font-size: 1.3rem; font-weight: 700; color: #111; margin: 0 0 16px; }
-.gallery-section { margin-top: 48px; padding-top: 28px; border-top: 1px solid #eee; }
+.section-title { font-size: 1.3rem; font-weight: 700; color: var(--text-primary); margin: 0 0 16px; }
+.gallery-section { margin-top: 48px; padding-top: 28px; border-top: 1px solid var(--border-color); }
 .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
 .gallery-img { width: 100%; height: 180px; object-fit: cover; border-radius: 10px; }
 
-.comments-section { margin-top: 48px; padding-top: 28px; border-top: 1px solid #eee; }
+.comments-section { margin-top: 48px; padding-top: 28px; border-top: 1px solid var(--border-color); }
 .comment-input-box { display: flex; gap: 14px; margin-bottom: 28px; }
 .avatar-small { width: 38px; height: 38px; flex-shrink: 0; border-radius: 50%; background: #3b82f6; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; overflow: hidden; }
 .avatar-small img { width: 100%; height: 100%; object-fit: cover; }
 .input-wrapper { flex: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-.input-wrapper textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-family: inherit; resize: vertical; outline: none; box-sizing: border-box; }
+.input-wrapper textarea { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 10px; font-family: inherit; resize: vertical; outline: none; box-sizing: border-box; background: var(--bg-card); color: var(--text-primary); }
 .input-wrapper textarea:focus { border-color: #3b82f6; }
 .btn-comment { background: #3b82f6; color: white; border: none; padding: 8px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; }
 .btn-comment:disabled { background: #93c5fd; cursor: not-allowed; }
-.login-prompt { background: #f8f9fa; padding: 14px; text-align: center; border-radius: 10px; margin-bottom: 28px; color: #555; }
+.login-prompt { background: var(--bg-secondary); padding: 14px; text-align: center; border-radius: 10px; margin-bottom: 28px; color: #555; }
 .login-prompt a { color: #3b82f6; font-weight: 600; text-decoration: none; }
 .comments-list { display: flex; flex-direction: column; gap: 16px; }
 .comment-item { display: flex; gap: 12px; }
-.comment-content { background: #f8f9fa; padding: 14px; border-radius: 0 12px 12px 12px; flex: 1; }
+.comment-content { background: var(--bg-secondary); padding: 14px; border-radius: 0 12px 12px 12px; flex: 1; }
 .comment-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
-.comment-author { font-weight: 600; color: #333; font-size: 0.9rem; }
-.comment-date { font-size: 0.78rem; color: #9ca3af; }
-.comment-text { margin: 0; color: #444; line-height: 1.5; }
+.comment-author { font-weight: 600; color: var(--text-primary); font-size: 0.9rem; }
+.comment-date { font-size: 0.78rem; color: var(--text-muted); }
+.comment-text { margin: 0; color: var(--text-secondary); line-height: 1.5; }
 
 /* ✅ Sidebar */
 .sidebar { display: flex; flex-direction: column; gap: 20px; position: sticky; top: 20px; }
-.sidebar-card { background: white; border-radius: 14px; padding: 18px; border: 1px solid #f0f0f0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-.sidebar-card-title { font-size: 0.9rem; font-weight: 700; color: #374151; margin: 0 0 12px; display: flex; align-items: center; gap: 6px; }
-.mini-map { width: 100%; height: 200px; border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; }
+.sidebar-card { background: var(--bg-card); border-radius: 14px; padding: 18px; border: 1px solid var(--border-light); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.sidebar-card-title { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); margin: 0 0 12px; display: flex; align-items: center; gap: 6px; }
+.mini-map { width: 100%; height: 200px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border-color); }
 .btn-open-maps { display: block; text-align: center; margin-top: 10px; font-size: 0.82rem; color: #3b82f6; text-decoration: none; font-weight: 600; }
 .btn-open-maps:hover { text-decoration: underline; }
 
 .info-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
 .info-row:last-child { margin-bottom: 0; }
-.info-label { font-size: 0.78rem; color: #9ca3af; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-.info-value { font-size: 0.9rem; color: #374151; font-weight: 500; }
+.info-label { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.info-value { font-size: 0.9rem; color: var(--text-primary); font-weight: 500; }
 .tag-list { display: flex; flex-wrap: wrap; gap: 4px; }
-.info-tag { background: #eff6ff; color: #3b82f6; font-size: 0.78rem; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+.info-tag { background: var(--accent-light); color: #3b82f6; font-size: 0.78rem; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
 
 @media (max-width: 900px) {
   .page-layout { grid-template-columns: 1fr; }

@@ -61,18 +61,18 @@ watch(() => route.params.name, (newName) => {
 
 <style scoped>
 .content { padding-top: 100px; padding-bottom: 80px; max-width: 100% !important; padding-left: 5%; padding-right: 5%;}
-.breadcrumbs { font-size: 1rem; margin-bottom: 30px; color: #666; font-weight: 500;}
+.breadcrumbs { font-size: 1rem; margin-bottom: 30px; color: var(--text-secondary); font-weight: 500;}
 .breadcrumbs a { color: #007bff; text-decoration: none; transition: 0.2s; }
 .breadcrumbs a:hover { color: #0056b3; text-decoration: underline; }
 .separator { margin: 0 10px; color: #ccc; }
-.current { color: #333; font-weight: 700; }
+.current { color: var(--text-primary); font-weight: 700; }
 
 .section-title { margin-bottom: 40px; }
-.section-title h2 { font-size: 2.5rem; font-weight: 800; color: #1a1a1a; margin-bottom: 10px;}
+.section-title h2 { font-size: 2.5rem; font-weight: 800; color: var(--text-primary); margin-bottom: 10px;}
 .title-underline { width: 80px; height: 5px; background: #007bff; border-radius: 3px; }
 
 .trip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
 .clickable-card { text-decoration: none; color: inherit; display: block; transition: transform 0.2s ease; }
 .clickable-card:hover { transform: translateY(-5px); }
-.no-results { grid-column: 1 / -1; padding: 50px; text-align: center; color: #888; background: #f8f9fa; border-radius: 12px; }
+.no-results { grid-column: 1 / -1; padding: 50px; text-align: center; color: var(--text-muted); background: var(--bg-secondary); border-radius: 12px; }
 </style>

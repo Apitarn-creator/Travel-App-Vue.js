@@ -192,12 +192,12 @@ function loginWithFacebook() {
 
 <style scoped>
 .login-container { display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 72px); background-color: #fbfcfd; padding: 40px 20px; }
-.login-card { background: white; width: 100%; max-width: 400px; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0; }
+.login-card { background: var(--bg-card); width: 100%; max-width: 400px; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid var(--border-light); }
 .login-header { text-align: center; margin-bottom: 30px; }
-.login-header h2 { font-size: 2rem; color: #1a1a1a; margin-bottom: 10px; }
-.login-header p { color: #666; font-size: 1rem; }
+.login-header h2 { font-size: 2rem; color: var(--text-primary); margin-bottom: 10px; }
+.login-header p { color: var(--text-secondary); font-size: 1rem; }
 .form-group { margin-bottom: 20px; }
-.form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #333; }
+.form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
 .form-group input { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; font-family: inherit; transition: all 0.3s; box-sizing: border-box; }
 .form-group input:focus { border-color: #007bff; outline: none; box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15); }
 .btn-submit { width: 100%; background: #007bff; color: white; border: none; padding: 14px; border-radius: 10px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 10px; transition: 0.3s; }
@@ -222,11 +222,11 @@ function loginWithFacebook() {
 .divider span { padding: 0 15px; font-size: 0.9rem; font-weight: 500; }
 .social-login { display: flex; gap: 15px; margin-bottom: 20px; }
 .btn-social { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; border-radius: 10px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: 0.3s; font-family: inherit; }
-.btn-google { background: white; border: 1px solid #ddd; color: #444; }
-.btn-google:hover { background: #f8f9fa; border-color: #ccc; }
+.btn-google { background: var(--bg-card); border: 1px solid #ddd; color: #444; }
+.btn-google:hover { background: var(--bg-secondary); border-color: #ccc; }
 .btn-facebook { background: #1877f2; border: 1px solid #1877f2; color: white; }
 .btn-facebook:hover { background: #166fe5; }
-.login-footer { text-align: center; margin-top: 25px; font-size: 0.95rem; color: #666; }
+.login-footer { text-align: center; margin-top: 25px; font-size: 0.95rem; color: var(--text-secondary); }
 .register-link { color: #007bff; text-decoration: none; font-weight: 600; }
 .register-link:hover { text-decoration: underline; }
 
