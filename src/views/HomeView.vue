@@ -195,11 +195,11 @@ const prevSlide = () => {
 <style scoped>
 .home-wrapper { padding-bottom: 100px; }
 .loading { text-align: center; padding: 100px; font-size: 1.2rem; color: #666; }
-.content-container { padding: 0 5%; max-width: 100% !important; margin-top: 30px; } 
+.content-container { max-width: 1200px; margin: 30px auto 0; padding: 0 20px; } 
 
 /* แถบไอคอนหมวดหมู่ด้านบน */
-.category-filter-bar { padding: 15px 5% 0 5%; border-bottom: 1px solid #eaeaea; background: white; margin-bottom: 20px; }
-.filter-scroll { display: flex; gap: 40px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+.category-filter-bar { border-bottom: 1px solid #eaeaea; background: white; margin-bottom: 20px; padding: 12px 40px 0; }
+.filter-scroll { display: flex; justify-content: center; gap: 40px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
 .filter-scroll::-webkit-scrollbar { display: none; }
 .filter-btn { display: flex; flex-direction: column; align-items: center; gap: 8px; background: none; border: none; cursor: pointer; opacity: 0.5; transition: all 0.2s ease; padding-bottom: 10px; border-bottom: 2px solid transparent; min-width: 60px; outline: none; }
 .filter-btn:hover { opacity: 1; transform: scale(1.05); }

@@ -83,6 +83,55 @@ export async function getUserByUsername(username: string) {
   return await response.json()
 }
 
+// ✅ Toggle Follow / Unfollow
+export async function toggleFollow(targetUserId: number) {
+  const token = localStorage.getItem('token')
+  const response = await fetch(`${API_BASE_URL}/api/users/${targetUserId}/follow`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  if (!response.ok) throw new Error('ไม่สามารถ follow ได้')
+  return await response.json() // { following: boolean, followingList: string }
+}
+
+// ✅ ดึง follower/following count
+export async function getFollowStats(userId: number) {
+  const response = await fetch(`${API_BASE_URL}/api/users/${userId}/follow-stats`)
+  if (!response.ok) throw new Error('ไม่สามารถดึงข้อมูลได้')
+  return await response.json() // { followers: number, following: number }
+}
+
+// ✅ Feed จาก user ที่ follow อยู่
+export async function getFollowingFeed() {
+  const token = localStorage.getItem('token')
+  const response = await fetch(`${API_BASE_URL}/api/users/me/feed`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  if (!response.ok) throw new Error('ไม่สามารถดึง feed ได้')
+  return await response.json()
+}
+
+// ✅ Toggle bookmark trip
+export async function toggleBookmark(tripId: number) {
+  const token = localStorage.getItem('token')
+  const response = await fetch(`${API_BASE_URL}/api/users/${tripId}/bookmark`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  if (!response.ok) throw new Error('ไม่สามารถ bookmark ได้')
+  return await response.json() // { bookmarked: boolean, bookmarkedTrips: string }
+}
+
+// ✅ ดึง trips ที่ bookmark ไว้ (เฉพาะตัวเอง)
+export async function getMyBookmarks() {
+  const token = localStorage.getItem('token')
+  const response = await fetch(`${API_BASE_URL}/api/users/me/bookmarks`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  if (!response.ok) throw new Error('ไม่สามารถดึง bookmarks ได้')
+  return await response.json()
+}
+
 // 💡 เพิ่มฟังก์ชันส่ง Google Token ไปให้ Spring Boot
 export async function loginWithGoogleAPI(googleToken: string) {
   const response = await fetch(`${API_BASE_URL}/api/users/google-login`, {

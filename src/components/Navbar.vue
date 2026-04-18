@@ -21,7 +21,7 @@ function handleLogout() {
 
 <template>
   <nav class="navbar">
-    <div class="container nav-content">
+    <div class="nav-content">
       <router-link to="/" class="logo" style="text-decoration: none;">
         Travel<span>Better</span>
       </router-link>
@@ -99,9 +99,23 @@ function handleLogout() {
 </template>
 
 <style scoped>
-/* สไตล์ทั้งหมดเหมือนเดิมเป๊ะครับ */
-.navbar { background: #ffffff; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; z-index: 1000; height: 72px; display: flex; align-items: center; }
-.nav-content { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+.navbar {
+  background: #ffffff;
+  border-bottom: 1px solid #f0f0f0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 72px;
+  display: flex;
+  align-items: center;
+}
+.nav-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0 40px;
+}
 .logo { font-size: 1.6rem; font-weight: 800; color: #1a1a1a; letter-spacing: -1px; }
 .logo span { color: #007bff; }
 .menu { display: flex; align-items: center; gap: 30px; }
@@ -137,6 +151,7 @@ function handleLogout() {
 .dropdown-backdrop { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1000; }
 
 @media (max-width: 768px) {
+  .nav-content { padding: 0 16px; }
   .logo { font-size: 1.4rem; }
   .nav-link { display: none; }
   .auth-buttons { gap: 10px; margin-left: 0; }

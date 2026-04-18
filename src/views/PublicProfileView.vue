@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { getUserByUsername, updateProfile } from '../api/userApi'
+import { getUserByUsername, updateProfile, toggleFollow, getFollowStats } from '../api/userApi'
 import { getTripsByUserId, getCommentedTripsByUserId } from '../api/tripApi'
 
 const route = useRoute()
@@ -13,31 +13,46 @@ const errorMessage = ref('')
 const currentUser = ref<any>(null)
 const targetUserId = ref<number | null>(null)
 
-// 💡 ตัวแปรสำหรับทริปของจริง และระบบแท็บ
 const userPosts = ref<any[]>([])
 const commentedPosts = ref<any[]>([])
-const activeTab = ref('my-posts') // 'my-posts' หรือ 'commented'
+const activeTab = ref('my-posts')
 
-// Popup รูปปก
+// ✅ Follow state
+const isFollowing = ref(false)
+const isFollowLoading = ref(false)
+const followerCount = ref(0)
+const followingCount = ref(0)
+
 const showCoverModal = ref(false)
 const isUploading = ref(false)
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
-    onMounted(async () => {
+onMounted(async () => {
   const userString = localStorage.getItem('user')
   if (userString) currentUser.value = JSON.parse(userString)
 
   try {
     isLoading.value = true
-    
-    // 💡 1. ดึงข้อมูล User จาก Username แทน
     const data = await getUserByUsername(targetUsername)
     publicProfile.value = data
-    targetUserId.value = data.id // 💡 พอได้ข้อมูลมา ค่อยเอา ID ไปใช้ต่อ
+    targetUserId.value = data.id
 
-    // 💡 2. ดึงข้อมูลทริป โดยใช้ ID ที่ได้มา
-    userPosts.value = await getTripsByUserId(targetUserId.value!)
-    commentedPosts.value = await getCommentedTripsByUserId(targetUserId.value!)
+    // โหลด trips และ follow stats พร้อมกัน
+    const [posts, commented, stats] = await Promise.all([
+      getTripsByUserId(targetUserId.value!),
+      getCommentedTripsByUserId(targetUserId.value!),
+      getFollowStats(targetUserId.value!)
+    ])
+    userPosts.value = posts
+    commentedPosts.value = commented
+    followerCount.value = stats.followers
+    followingCount.value = stats.following
+
+    // เช็คว่า login user follow คนนี้อยู่ไหม
+    if (currentUser.value?.following) {
+      isFollowing.value = currentUser.value.following
+        .split(',').includes(String(targetUserId.value))
+    }
 
   } catch (error: any) {
     errorMessage.value = 'ไม่พบผู้ใช้งานนี้ หรือลิงก์อาจไม่ถูกต้อง 😢'
@@ -46,10 +61,26 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
   }
 })
 
-// 💡 เช็คว่าเป็นโปรไฟล์เราเองไหม โดยเทียบจาก Username แทน
+// ✅ กด Follow / Unfollow
+async function handleFollow() {
+  if (!currentUser.value) { window.location.href = '/login'; return }
+  if (isFollowLoading.value) return
+  isFollowLoading.value = true
+  try {
+    const res = await toggleFollow(targetUserId.value!)
+    isFollowing.value = res.following
+    followerCount.value += res.following ? 1 : -1
+    // อัปเดต localStorage
+    const user = JSON.parse(localStorage.getItem('user') || '{}')
+    user.following = res.followingList
+    localStorage.setItem('user', JSON.stringify(user))
+    currentUser.value = user
+  } catch { /* silent */ } finally {
+    isFollowLoading.value = false
+  }
+}
+
 const isMyProfile = computed(() => currentUser.value?.username === targetUsername)
-
-
 const userInitials = computed(() => publicProfile.value?.username ? publicProfile.value.username.charAt(0).toUpperCase() : '?')
 const displayCover = computed(() => publicProfile.value?.profile?.coverUrl || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop')
 
@@ -115,9 +146,34 @@ async function handleCoverUpload(event: Event) {
             <p class="username">@{{ publicProfile?.username }}</p>
             <p class="bio">{{ publicProfile?.profile?.bio || 'นักเดินทางที่ยังไม่ได้เขียนแนะนำตัว 🎒' }}</p>
             <div class="profile-stats">
-              <div class="stat-box"><span class="stat-number">{{ userPosts.length }}</span><span class="stat-label">ทริปที่สร้าง</span></div>
-              <div class="stat-box"><span class="stat-number">{{ commentedPosts.length }}</span><span class="stat-label">ไปคอมเมนต์</span></div>
+              <div class="stat-box"><span class="stat-number">{{ userPosts.length }}</span><span class="stat-label">ทริป</span></div>
+              <div class="stat-box"><span class="stat-number">{{ followerCount }}</span><span class="stat-label">ผู้ติดตาม</span></div>
+              <div class="stat-box"><span class="stat-number">{{ followingCount }}</span><span class="stat-label">กำลังติดตาม</span></div>
             </div>
+
+            <!-- ✅ Follow button — ซ่อนถ้าเป็นโปรไฟล์ตัวเอง -->
+            <button
+              v-if="!isMyProfile && currentUser"
+              class="btn-follow"
+              :class="{ 'following': isFollowing, 'loading': isFollowLoading }"
+              @click="handleFollow"
+              :disabled="isFollowLoading"
+            >
+              <svg v-if="isFollowing" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <line x1="19" y1="8" x2="19" y2="14"/>
+                <line x1="22" y1="11" x2="16" y2="11"/>
+              </svg>
+              {{ isFollowing ? 'กำลังติดตาม' : 'ติดตาม' }}
+            </button>
+
+            <router-link v-if="isMyProfile" to="/profile" class="btn-edit-profile">
+              ✏️ แก้ไขโปรไฟล์
+            </router-link>
           </div>
         </div>
       </div>
@@ -215,6 +271,29 @@ async function handleCoverUpload(event: Event) {
 
 .empty-state { text-align: center; padding: 50px 20px; color: #666; width: 100%; grid-column: 1 / -1; }
 .btn-primary { display: inline-block; margin-top: 10px; background: #007bff; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; }
+
+/* ✅ Follow button */
+.btn-follow {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 16px; padding: 10px 24px; border-radius: 20px;
+  font-size: 0.95rem; font-weight: 600; cursor: pointer;
+  border: 2px solid #007bff; color: #007bff; background: white;
+  transition: all 0.2s; font-family: inherit;
+}
+.btn-follow:hover:not(:disabled) { background: #007bff; color: white; transform: translateY(-1px); }
+.btn-follow.following { background: #007bff; color: white; }
+.btn-follow.following:hover:not(:disabled) { background: #dc2626; border-color: #dc2626; }
+.btn-follow.following:hover:not(:disabled)::after { content: 'ยกเลิก'; }
+.btn-follow.loading { opacity: 0.7; cursor: not-allowed; }
+
+.btn-edit-profile {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 16px; padding: 9px 20px; border-radius: 20px;
+  font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  border: 1.5px solid #e2e8f0; color: #475569; background: white;
+  text-decoration: none; transition: all 0.2s;
+}
+.btn-edit-profile:hover { border-color: #007bff; color: #007bff; }
 
 .posts-grid { 
   display: grid; 

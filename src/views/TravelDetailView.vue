@@ -2,7 +2,7 @@
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getTripById, getCommentsByTripId, addComment, toggleLike } from '../api/tripApi'
-import { getUserById } from '../api/userApi'
+import { getUserById, toggleBookmark } from '../api/userApi'
 
 const route = useRoute()
 const tripId = Number(route.params.id)
@@ -20,6 +20,10 @@ const isSubmitting = ref(false)
 const likeCount = ref(0)
 const isLiked = ref(false)
 const isLiking = ref(false)
+
+// Bookmark state
+const isBookmarked = ref(false)
+const isBookmarking = ref(false)
 
 // Map
 let detailMap: any = null
@@ -39,6 +43,11 @@ onMounted(async () => {
       isLiked.value = tripData.likedByStr.split(',').includes(String(currentUser.value.id))
     }
 
+    // เช็ค bookmark จาก localStorage
+    if (currentUser.value?.bookmarkedTrips) {
+      isBookmarked.value = currentUser.value.bookmarkedTrips.split(',').includes(String(tripId))
+    }
+
     if (tripData.authorId) {
       author.value = await getUserById(tripData.authorId)
     }
@@ -53,7 +62,25 @@ onMounted(async () => {
 
 onUnmounted(() => { detailMap?.remove() })
 
-// ✅ [ฟีเจอร์ 2] Like / Unlike
+// ✅ Bookmark
+async function handleBookmark() {
+  if (!currentUser.value) { window.location.href = '/login'; return }
+  if (isBookmarking.value) return
+  isBookmarking.value = true
+  try {
+    const res = await toggleBookmark(tripId)
+    isBookmarked.value = res.bookmarked
+    // อัปเดต bookmarkedTrips ใน localStorage
+    const user = JSON.parse(localStorage.getItem('user') || '{}')
+    user.bookmarkedTrips = res.bookmarkedTrips
+    localStorage.setItem('user', JSON.stringify(user))
+    currentUser.value = user
+  } catch { /* silent */ } finally {
+    isBookmarking.value = false
+  }
+}
+
+// ✅ Like / Unlike
 async function handleLike() {
   if (!currentUser.value) { window.location.href = '/login'; return }
   if (isLiking.value) return
@@ -182,14 +209,23 @@ const formattedDescription = computed(() => {
             </router-link>
             <div v-else class="author-info"><span class="publish-date">{{ formattedDate }}</span></div>
 
-            <!-- ✅ [ฟีเจอร์ 2] Like Button -->
-            <button class="like-btn" :class="{ liked: isLiked, loading: isLiking }" @click="handleLike" :disabled="isLiking">
-              <svg width="20" height="20" viewBox="0 0 24 24" :fill="isLiked ? '#ef4444' : 'none'" stroke="currentColor" stroke-width="2">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-              </svg>
-              <span class="like-count">{{ likeCount }}</span>
-              <span class="like-label">{{ isLiked ? 'ถูกใจแล้ว' : 'ถูกใจ' }}</span>
-            </button>
+            <!-- ✅ Like + Bookmark buttons -->
+            <div class="hero-actions">
+              <button class="like-btn" :class="{ liked: isLiked, loading: isLiking }" @click="handleLike" :disabled="isLiking">
+                <svg width="20" height="20" viewBox="0 0 24 24" :fill="isLiked ? '#ef4444' : 'none'" stroke="currentColor" stroke-width="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+                <span class="like-count">{{ likeCount }}</span>
+                <span class="like-label">{{ isLiked ? 'ถูกใจแล้ว' : 'ถูกใจ' }}</span>
+              </button>
+
+              <button class="bookmark-btn" :class="{ bookmarked: isBookmarked, loading: isBookmarking }" @click="handleBookmark" :disabled="isBookmarking">
+                <svg width="20" height="20" viewBox="0 0 24 24" :fill="isBookmarked ? '#f59e0b' : 'none'" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                </svg>
+                <span class="bookmark-label">{{ isBookmarked ? 'บันทึกแล้ว' : 'บันทึก' }}</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -313,7 +349,9 @@ const formattedDescription = computed(() => {
 .author-name { font-weight: 600; font-size: 1rem; }
 .publish-date { font-size: 0.82rem; opacity: 0.8; }
 
-/* ✅ Like Button */
+/* ✅ Like + Bookmark */
+.hero-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
 .like-btn {
   display: flex; align-items: center; gap: 8px;
   background: rgba(255,255,255,0.15); backdrop-filter: blur(8px);
@@ -327,6 +365,19 @@ const formattedDescription = computed(() => {
 .like-btn.loading { opacity: 0.7; cursor: not-allowed; }
 .like-count { font-size: 1rem; font-weight: 700; }
 .like-label { font-size: 0.85rem; }
+
+.bookmark-btn {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.15); backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255,255,255,0.4); color: white;
+  padding: 10px 20px; border-radius: 30px; cursor: pointer;
+  font-size: 0.95rem; font-weight: 600; font-family: inherit;
+  transition: all 0.2s;
+}
+.bookmark-btn:hover:not(:disabled) { background: rgba(255,255,255,0.25); transform: scale(1.05); }
+.bookmark-btn.bookmarked { background: rgba(245,158,11,0.25); border-color: #f59e0b; color: #fde68a; }
+.bookmark-btn.loading { opacity: 0.7; cursor: not-allowed; }
+.bookmark-label { font-size: 0.85rem; }
 
 /* ✅ Page layout with sidebar */
 .page-layout { max-width: 1100px; margin: 0 auto; padding: 40px 20px; display: grid; grid-template-columns: 1fr 300px; gap: 40px; align-items: start; }
