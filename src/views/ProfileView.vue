@@ -349,8 +349,10 @@ function cleanDescription(text: string | null): string {
 @media (max-width: 768px) {
   .layout-grid { grid-template-columns: 1fr; }
   .form-grid { grid-template-columns: 1fr; gap: 16px; }
-  .content-area { padding: 24px; }
+  .content-area { padding: 20px 16px; }
   .avatar-section { flex-direction: column; align-items: flex-start; text-align: left; }
   .bm-grid { grid-template-columns: 1fr 1fr; }
+  .profile-page { padding: 16px 12px; }
+  .sidebar { padding: 16px 12px; }
 }
 </style>

@@ -294,4 +294,18 @@ function cleanDescription(text: string | null): string {
 .user-info { flex: 1; display: flex; flex-direction: column; }
 .user-displayname { font-weight: 600; color: var(--text-primary); font-size: 0.95rem; }
 .user-username { font-size: 0.82rem; color: var(--text-muted); }
+
+@media (max-width: 768px) {
+  .search-page { padding: 16px 12px 40px; }
+  .search-header { padding: 20px 16px; }
+  .search-header h1 { font-size: 1.3rem; margin-bottom: 14px; }
+  .btn-search-go { padding: 8px 14px; font-size: 0.85rem; }
+  .filter-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .tags-row { flex-wrap: wrap; }
+  .trips-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+}
+
+@media (max-width: 480px) {
+  .trips-grid { grid-template-columns: 1fr; }
+}
 </style>

@@ -60,4 +60,9 @@
 .sk-sidebar { display: flex; flex-direction: column; gap: 16px; }
 .sk-card { background: var(--bg-card); border-radius: 14px; padding: 16px; border: 1px solid var(--border-light); }
 .sk-map { height: 180px; border-radius: 10px; }
+@media (max-width: 768px) {
+  .sk-layout { grid-template-columns: 1fr; padding: 16px; }
+  .sk-hero { height: 260px; }
+}
 </style>
+/* Already has style scoped, append via sed */

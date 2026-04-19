@@ -172,7 +172,11 @@ const formattedDate = computed(() => {
 })
 const formattedDescription = computed(() => {
   if (!trip.value?.description) return ''
-  let html = trip.value.description.replace(/\n/g, '<br>')
+  let html = trip.value.description
+  // Quill HTML หรือ plain text เก่า
+  const isHtml = /<[a-z][\s\S]*>/i.test(html)
+  if (!isHtml) html = html.replace(/\n/g, '<br>')
+  // แทน [IMAGE:N] ด้วยรูปจริง
   html = html.replace(/\[IMAGE:(\d+)\]/g, (_: string, n: string) => {
     const url = trip.value.photos[parseInt(n)]
     return url ? `<div class="inline-image-wrapper"><img src="${url}" class="inline-image" /></div>` : ''
@@ -386,6 +390,15 @@ const formattedDescription = computed(() => {
 /* Article */
 .article-col { min-width: 0; }
 .description-html { font-size: 1.15rem; line-height: 1.9; color: var(--text-primary); margin-bottom: 40px; }
+.description-html h2 { font-size: 1.6rem; font-weight: 700; margin: 28px 0 12px; color: var(--text-primary); }
+.description-html h3 { font-size: 1.3rem; font-weight: 600; margin: 22px 0 10px; color: var(--text-primary); }
+.description-html p { margin-bottom: 12px; }
+.description-html ul, .description-html ol { padding-left: 24px; margin-bottom: 14px; }
+.description-html li { margin-bottom: 6px; }
+.description-html blockquote { border-left: 4px solid var(--accent); background: var(--accent-light); padding: 12px 18px; margin: 16px 0; border-radius: 0 8px 8px 0; color: var(--text-secondary); }
+.description-html strong { font-weight: 700; color: var(--text-primary); }
+.description-html em { font-style: italic; }
+.description-html a { color: var(--accent); text-decoration: underline; }
 :deep(.inline-image-wrapper) { margin: 20px 0; text-align: center; }
 :deep(.inline-image) { max-width: 100%; max-height: 600px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); object-fit: contain; }
 
@@ -433,5 +446,22 @@ const formattedDescription = computed(() => {
   .sidebar { position: static; }
   .hero-section { height: 420px; }
   .title { font-size: 1.8rem; }
+}
+
+@media (max-width: 768px) {
+  .hero-section { height: 260px; }
+  .title { font-size: 1.4rem; }
+  .hero-content { padding-left: 16px; padding-right: 16px; padding-bottom: 20px; }
+  .hero-actions { flex-wrap: wrap; gap: 8px; }
+  .like-btn, .bookmark-btn { padding: 8px 14px; font-size: 0.82rem; }
+  .page-layout { padding: 16px; gap: 20px; }
+  .sidebar { flex-direction: row; flex-wrap: wrap; gap: 12px; }
+  .sidebar-card { flex: 1; min-width: 140px; }
+  .mini-map { height: 140px; }
+  .description-html { font-size: 1rem; }
+  .gallery-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .gallery-img { height: 120px; }
+  .comment-input-box { flex-direction: column; }
+  .avatar-small { display: none; }
 }
 </style>

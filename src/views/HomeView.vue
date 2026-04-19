@@ -373,8 +373,22 @@ const prevSlide = () => {
 
 @media (max-width: 768px) {
   .highlight-main {
-    aspect-ratio: 4 / 3; /* บนมือถือปรับสัดส่วนให้เกือบเป็นสี่เหลี่ยมจัตุรัส จะมองเห็นชัดกว่า */
+    aspect-ratio: 4 / 3;
     max-height: none;
   }
+  .content-container { padding: 0 12px; }
+  .feed-tabs { width: 100%; justify-content: center; }
+  .feed-tab { flex: 1; text-align: center; padding: 8px 12px; font-size: 0.85rem; }
+  .posts-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .trip-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .category-filter-bar { padding: 10px 12px 0; }
+  .filter-scroll { gap: 20px; }
+  .filter-btn { min-width: 50px; }
+  .filter-text { font-size: 0.75rem; }
+}
+
+@media (max-width: 480px) {
+  .posts-grid { grid-template-columns: 1fr; }
+  .trip-grid { grid-template-columns: 1fr; }
 }
 </style>

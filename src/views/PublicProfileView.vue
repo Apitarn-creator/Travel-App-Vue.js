@@ -315,8 +315,22 @@ async function handleCoverUpload(event: Event) {
 .btn-upload-modal { width: 100%; background: #007bff; color: white; border: none; padding: 12px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; }
 .btn-cancel { width: 100%; background: var(--bg-tertiary); border: none; padding: 12px; border-radius: 8px; cursor: pointer; }
 
+@media (max-width: 768px) {
+  .cover-container { height: 200px; }
+  .profile-card { margin: 0 12px; padding: 16px; }
+  .profile-avatar { width: 90px; height: 90px; }
+  .user-details .nickname { font-size: 1.3rem; }
+  .profile-stats { gap: 16px; }
+  .posts-section { padding: 0 12px; }
+  .posts-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .profile-tabs { gap: 0; }
+  .tab-btn { padding: 10px 16px; font-size: 0.95rem; }
+  .btn-follow, .btn-edit-profile { padding: 8px 18px; font-size: 0.85rem; }
+}
+
 @media (max-width: 640px) {
-  .profile-avatar { width: 120px; height: 120px; }
-  .tab-btn { padding: 10px; font-size: 1rem; }
+  .profile-avatar { width: 80px; height: 80px; }
+  .posts-grid { grid-template-columns: 1fr; }
+  .tab-btn { padding: 10px; font-size: 0.9rem; }
 }
 </style>

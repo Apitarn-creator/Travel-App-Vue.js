@@ -209,4 +209,12 @@ function formatTime(dateStr: string) {
   width: 8px; height: 8px; border-radius: 50%;
   background: #3b82f6; flex-shrink: 0;
 }
+
+@media (max-width: 768px) {
+  .notif-page { padding: 16px 12px 40px; }
+  .notif-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .notif-item { padding: 12px 16px; gap: 10px; }
+  .notif-avatar img, .avatar-placeholder { width: 40px; height: 40px; }
+  .notif-message { font-size: 0.85rem; }
+}
 </style>

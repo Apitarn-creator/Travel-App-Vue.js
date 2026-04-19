@@ -49,4 +49,8 @@
 .sk-line { height: 12px; border-radius: 6px; }
 .sk-line.w70 { width: 70%; }
 .sk-line.w50 { width: 50%; }
+@media (max-width: 768px) {
+  .sk-info-card { margin: 0 12px; padding: 20px 16px; }
+  .sk-grid { grid-template-columns: 1fr 1fr; padding: 0 12px; }
+}
 </style>
