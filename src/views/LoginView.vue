@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { login, loginWithGoogleAPI, loginWithFacebookAPI } from '../api/userApi'
 import { googleOneTap } from 'vue3-google-login'
 import Button from 'primevue/button';
 
 
-const router = useRouter()
 
 const form = ref({
   email: '',
@@ -128,9 +126,6 @@ const handleGoogleButtonClick = async () => {
   }
 }
 
-function loginWithFacebook() {
-  alert('ระบบกำลังเชื่อมต่อกับ Facebook...')
-}
 </script>
 
 <template>

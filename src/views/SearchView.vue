@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getAllTrips } from '../api/tripApi'
 
 const route = useRoute()
 const router = useRouter()

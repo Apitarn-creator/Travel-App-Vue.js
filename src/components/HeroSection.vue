@@ -49,12 +49,6 @@ function selectTrip(trip: any) {
   router.push(`/trip/${trip.id}`)
 }
 
-function selectSuggestion(trip: any) {
-  localQuery.value = trip.title
-  showDropdown.value = false
-  router.push({ path: '/search', query: { q: trip.title } })
-}
-
 function handleClickOutside(e: MouseEvent) {
   if (searchBoxRef.value && !searchBoxRef.value.contains(e.target as Node)) {
     showDropdown.value = false
