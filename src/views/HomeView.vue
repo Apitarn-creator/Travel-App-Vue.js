@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import HeroSection from '../components/HeroSection.vue'
 import TripCard from '../components/TripCard.vue'
+import SkeletonCard from '../components/SkeletonCard.vue'
 import { getAllTrips, type Trip } from '../api/tripApi'
 import { getFollowingFeed } from '../api/userApi'
 
@@ -115,7 +116,11 @@ const prevSlide = () => {
       </div>
     </div>
 
-    <div v-if="loading" class="loading">กำลังโหลดข้อมูล...</div>
+    <div v-if="loading" class="skeleton-container">
+      <div class="skeleton-grid">
+        <SkeletonCard v-for="i in 8" :key="i" />
+      </div>
+    </div>
 
     <div v-else class="content-container">
 
@@ -155,7 +160,9 @@ const prevSlide = () => {
 
       <!-- ✅ Following Feed -->
       <div v-else-if="activeTab === 'following'">
-        <div v-if="feedLoading" class="loading">กำลังโหลด feed...</div>
+        <div v-if="feedLoading" class="skeleton-grid">
+          <SkeletonCard v-for="i in 6" :key="i" />
+        </div>
         <div v-else-if="feedTrips.length === 0" class="feed-empty">
           <div class="feed-empty-inner">
             <span style="font-size:3rem">👥</span>
@@ -243,6 +250,8 @@ const prevSlide = () => {
 <style scoped>
 .home-wrapper { padding-bottom: 100px; }
 .loading { text-align: center; padding: 100px; font-size: 1.2rem; color: var(--text-secondary); }
+.skeleton-container { padding: 30px 20px; max-width: 1200px; margin: 0 auto; }
+.skeleton-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
 .content-container { max-width: 1200px; margin: 30px auto 0; padding: 0 20px; }
 
 /* ✅ Feed Tabs */

@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { getUserByUsername, updateProfile, toggleFollow, getFollowStats } from '../api/userApi'
 import { getTripsByUserId, getCommentedTripsByUserId } from '../api/tripApi'
+import SkeletonProfile from '../components/SkeletonProfile.vue'
 
 const route = useRoute()
 const targetUsername = route.params.username as string
@@ -122,7 +123,7 @@ async function handleCoverUpload(event: Event) {
 <template>
   <div class="public-profile-page">
     
-    <div v-if="isLoading" class="loading-state">กำลังโหลดข้อมูล... ⏳</div>
+    <SkeletonProfile v-if="isLoading" />
     <div v-else-if="errorMessage" class="error-state">
       <h2>{{ errorMessage }}</h2>
       <router-link to="/" class="btn-back">กลับหน้าแรก</router-link>

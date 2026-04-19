@@ -79,9 +79,15 @@ function formatTime(dateStr: string) {
         </button>
       </div>
 
-      <!-- Loading -->
-      <div v-if="isLoading" class="notif-loading">
-        <div class="spinner"></div>
+      <!-- Loading skeleton -->
+      <div v-if="isLoading" class="sk-notif-list">
+        <div v-for="i in 5" :key="i" class="sk-notif-item">
+          <div class="sk-avatar shimmer"></div>
+          <div class="sk-content">
+            <div class="sk-line long shimmer"></div>
+            <div class="sk-line short shimmer"></div>
+          </div>
+        </div>
       </div>
 
       <!-- Empty -->
@@ -139,8 +145,28 @@ function formatTime(dateStr: string) {
 .btn-read-all:hover { border-color: #007bff; color: #007bff; }
 
 .notif-loading { display: flex; justify-content: center; padding: 60px; }
-.spinner { width: 32px; height: 32px; border: 3px solid #e2e8f0; border-top-color: #007bff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+.spinner { width: 32px; height: 32px; border: 3px solid var(--border-color); border-top-color: #007bff; border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* Skeleton */
+@keyframes shimmer {
+  0% { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--bg-secondary) 50%, var(--bg-tertiary) 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 8px;
+}
+.sk-notif-list { background: var(--bg-card); border-radius: 16px; overflow: hidden; border: 1px solid var(--border-light); }
+.sk-notif-item { display: flex; align-items: center; gap: 14px; padding: 16px 20px; border-bottom: 1px solid var(--border-light); }
+.sk-notif-item:last-child { border-bottom: none; }
+.sk-avatar { width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0; }
+.sk-content { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.sk-line { height: 12px; }
+.sk-line.long { width: 75%; }
+.sk-line.short { width: 35%; }
 
 .notif-empty { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 80px 20px; text-align: center; color: var(--text-muted); }
 .notif-empty p { margin: 0; font-size: 1rem; font-weight: 500; }

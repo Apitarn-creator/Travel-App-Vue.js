@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getTripById, getCommentsByTripId, addComment, toggleLike } from '../api/tripApi'
 import { getUserById, toggleBookmark } from '../api/userApi'
+import SkeletonTripDetail from '../components/SkeletonTripDetail.vue'
 
 const route = useRoute()
 const tripId = Number(route.params.id)
@@ -182,7 +183,7 @@ const formattedDescription = computed(() => {
 
 <template>
   <div class="travel-detail-page">
-    <div v-if="isLoading" class="loading-state">กำลังโหลดเนื้อหา... ⏳</div>
+    <SkeletonTripDetail v-if="isLoading" />
     <div v-else-if="errorMessage" class="error-state">
       <h2>{{ errorMessage }}</h2>
       <router-link to="/" class="btn-back">กลับหน้าแรก</router-link>
