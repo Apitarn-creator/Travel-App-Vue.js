@@ -23,7 +23,12 @@ const form = ref({
   gender: '',
   birthdate: '',
   socialLink: '',
-  avatarUrl: ''
+  avatarUrl: '',
+  facebookUrl: '',
+  instagramUrl: '',
+  twitterUrl: '',
+  tiktokUrl: '',
+  youtubeUrl: ''
 })
 
 onMounted(() => {
@@ -41,6 +46,11 @@ onMounted(() => {
     form.value.gender = currentUser.value.profile?.gender || ''
     form.value.birthdate = currentUser.value.profile?.birthdate || ''
     form.value.socialLink = currentUser.value.profile?.socialLink || ''
+    form.value.facebookUrl = currentUser.value.profile?.facebookUrl || ''
+    form.value.instagramUrl = currentUser.value.profile?.instagramUrl || ''
+    form.value.twitterUrl = currentUser.value.profile?.twitterUrl || ''
+    form.value.tiktokUrl = currentUser.value.profile?.tiktokUrl || ''
+    form.value.youtubeUrl = currentUser.value.profile?.youtubeUrl || ''
   } else {
     router.push('/login')
   }
@@ -77,7 +87,21 @@ async function handleSave() {
   errorMessage.value = ''
 
   try {
-    const updatedUser = await updateProfile(currentUser.value.id, form.value)
+    const updatedUser = await updateProfile(currentUser.value.id, {
+      ...form.value,
+      profile: {
+        nickname: form.value.nickname,
+        bio: form.value.bio,
+        gender: form.value.gender,
+        birthdate: form.value.birthdate,
+        socialLink: form.value.socialLink,
+        facebookUrl: form.value.facebookUrl,
+        instagramUrl: form.value.instagramUrl,
+        twitterUrl: form.value.twitterUrl,
+        tiktokUrl: form.value.tiktokUrl,
+        youtubeUrl: form.value.youtubeUrl,
+      }
+    })
 
     localStorage.setItem('user', JSON.stringify(updatedUser))
     currentUser.value = updatedUser
@@ -213,8 +237,83 @@ function cleanDescription(text: string | null): string {
             </div>
 
             <div class="form-group full-width">
-              <label>ลิงก์โซเชียลมีเดีย (Facebook, Instagram ฯลฯ)</label>
-              <input type="url" v-model="form.socialLink" placeholder="https://..." :disabled="loading" />
+              <label>โซเชียลมีเดีย</label>
+              <div class="social-links-grid">
+
+                <div class="social-input-row">
+                  <div class="social-icon facebook">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                    </svg>
+                  </div>
+                  <input type="url" v-model="form.facebookUrl" placeholder="https://facebook.com/username" :disabled="loading" />
+                  <a v-if="form.facebookUrl" :href="form.facebookUrl" target="_blank" class="btn-open-link">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+                    </svg>
+                  </a>
+                </div>
+
+                <div class="social-input-row">
+                  <div class="social-icon instagram">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                      <circle cx="12" cy="12" r="4"/>
+                      <circle cx="17.5" cy="6.5" r="0.5" fill="white" stroke="none"/>
+                    </svg>
+                  </div>
+                  <input type="url" v-model="form.instagramUrl" placeholder="https://instagram.com/username" :disabled="loading" />
+                  <a v-if="form.instagramUrl" :href="form.instagramUrl" target="_blank" class="btn-open-link">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+                    </svg>
+                  </a>
+                </div>
+
+                <div class="social-input-row">
+                  <div class="social-icon tiktok">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/>
+                    </svg>
+                  </div>
+                  <input type="url" v-model="form.tiktokUrl" placeholder="https://tiktok.com/@username" :disabled="loading" />
+                  <a v-if="form.tiktokUrl" :href="form.tiktokUrl" target="_blank" class="btn-open-link">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+                    </svg>
+                  </a>
+                </div>
+
+                <div class="social-input-row">
+                  <div class="social-icon youtube">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                      <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/>
+                      <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#ff0000" stroke="none"/>
+                    </svg>
+                  </div>
+                  <input type="url" v-model="form.youtubeUrl" placeholder="https://youtube.com/@channel" :disabled="loading" />
+                  <a v-if="form.youtubeUrl" :href="form.youtubeUrl" target="_blank" class="btn-open-link">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+                    </svg>
+                  </a>
+                </div>
+
+                <div class="social-input-row">
+                  <div class="social-icon twitter">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                  </div>
+                  <input type="url" v-model="form.twitterUrl" placeholder="https://x.com/username" :disabled="loading" />
+                  <a v-if="form.twitterUrl" :href="form.twitterUrl" target="_blank" class="btn-open-link">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+                    </svg>
+                  </a>
+                </div>
+
+              </div>
             </div>
 
             <div class="form-actions">
@@ -328,7 +427,34 @@ function cleanDescription(text: string | null): string {
 .alert.success { background-color: #ecfdf5; color: #059669; border: 1px solid #d1fae5; }
 .alert.error { background-color: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
 
-/* ✅ Bookmarks */
+/* ✅ Social Links */
+.social-links-grid { display: flex; flex-direction: column; gap: 10px; }
+.social-input-row { display: flex; align-items: center; gap: 10px; }
+.social-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.social-icon.facebook { background: #1877f2; }
+.social-icon.instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+.social-icon.tiktok { background: #000000; }
+.social-icon.youtube { background: #ff0000; }
+.social-icon.twitter { background: #000000; }
+.social-input-row input {
+  flex: 1; padding: 10px 14px; border: 1px solid var(--border-color);
+  border-radius: 10px; font-size: 0.9rem; font-family: inherit;
+  background: var(--bg-card); color: var(--text-primary);
+  transition: 0.2s; outline: none;
+}
+.social-input-row input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,123,255,0.12); }
+.social-input-row input::placeholder { color: var(--text-muted); }
+.btn-open-link {
+  width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-tertiary); color: var(--text-muted);
+  text-decoration: none; transition: 0.2s;
+}
+.btn-open-link:hover { background: var(--accent-light); color: var(--accent); }
 .bm-loading { text-align: center; padding: 60px; color: var(--text-muted); }
 .bm-empty { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 60px 20px; color: var(--text-muted); text-align: center; }
 .bm-empty p { margin: 0; font-size: 1rem; }

@@ -146,6 +146,25 @@ async function handleCoverUpload(event: Event) {
             <h1 class="nickname">{{ publicProfile?.profile?.nickname || publicProfile?.username }}</h1>
             <p class="username">@{{ publicProfile?.username }}</p>
             <p class="bio">{{ publicProfile?.profile?.bio || 'นักเดินทางที่ยังไม่ได้เขียนแนะนำตัว 🎒' }}</p>
+
+            <!-- ✅ Social Links Icons -->
+            <div class="social-icons-row" v-if="publicProfile?.profile?.facebookUrl || publicProfile?.profile?.instagramUrl || publicProfile?.profile?.tiktokUrl || publicProfile?.profile?.youtubeUrl || publicProfile?.profile?.twitterUrl">
+              <a v-if="publicProfile.profile.facebookUrl" :href="publicProfile.profile.facebookUrl" target="_blank" class="social-link-icon facebook" title="Facebook">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+              </a>
+              <a v-if="publicProfile.profile.instagramUrl" :href="publicProfile.profile.instagramUrl" target="_blank" class="social-link-icon instagram" title="Instagram">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="white" stroke="none"/></svg>
+              </a>
+              <a v-if="publicProfile.profile.tiktokUrl" :href="publicProfile.profile.tiktokUrl" target="_blank" class="social-link-icon tiktok" title="TikTok">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
+              </a>
+              <a v-if="publicProfile.profile.youtubeUrl" :href="publicProfile.profile.youtubeUrl" target="_blank" class="social-link-icon youtube" title="YouTube">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#ff0000" stroke="none"/></svg>
+              </a>
+              <a v-if="publicProfile.profile.twitterUrl" :href="publicProfile.profile.twitterUrl" target="_blank" class="social-link-icon twitter" title="X (Twitter)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              </a>
+            </div>
             <div class="profile-stats">
               <div class="stat-box"><span class="stat-number">{{ userPosts.length }}</span><span class="stat-label">ทริป</span></div>
               <div class="stat-box"><span class="stat-number">{{ followerCount }}</span><span class="stat-label">ผู้ติดตาม</span></div>
@@ -252,7 +271,21 @@ async function handleCoverUpload(event: Event) {
 .profile-avatar.placeholder { background-color: #007bff; color: white; display: flex; justify-content: center; align-items: center; font-size: 4rem; font-weight: bold; }
 .user-details .nickname { font-size: 1.8rem; font-weight: 700; color: var(--text-primary); margin: 0 0 5px 0; }
 .user-details .username { font-size: 1rem; color: var(--text-muted); margin: 0 0 15px 0; }
-.user-details .bio { font-size: 1rem; color: var(--text-secondary); max-width: 500px; margin: 0 auto 20px auto; line-height: 1.5; }
+.user-details .bio { font-size: 1rem; color: var(--text-secondary); max-width: 500px; margin: 0 auto 12px auto; line-height: 1.5; }
+
+/* ✅ Social Icons Row */
+.social-icons-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
+.social-link-icon {
+  width: 34px; height: 34px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  text-decoration: none; transition: transform 0.2s, opacity 0.2s;
+}
+.social-link-icon:hover { transform: translateY(-2px); opacity: 0.85; }
+.social-link-icon.facebook { background: #1877f2; }
+.social-link-icon.instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+.social-link-icon.tiktok { background: #000000; }
+.social-link-icon.youtube { background: #ff0000; }
+.social-link-icon.twitter { background: #000000; }
 
 .profile-stats { display: flex; gap: 30px; justify-content: center; padding-top: 20px; border-top: 1px solid #f1f5f9; width: 100%; }
 .stat-box { display: flex; flex-direction: column; }
