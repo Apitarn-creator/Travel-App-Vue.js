@@ -9,5 +9,16 @@
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/th_TH/sdk.js"></script>
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : 933143832839274,
+          cookie     : true,
+          xfbml      : true,
+          version    : 'v19.0' 
+        });
+      };
+    </script>
   </body>
 </html>
