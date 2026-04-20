@@ -28,7 +28,7 @@ const activeCategory = ref('ทั้งหมด')
 const categories = [
   { name: 'ที่พัก', icon: '🏨', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&auto=format&fit=crop' },
   { name: 'ที่ท่องเที่ยว', icon: '⛰️', image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=500&auto=format&fit=crop' },
-  { name: 'ที่ถ่ายรูป', icon: '📸', image: 'https://images.unsplash.com/photo-1516483638261-f4daaf28dd0e?w=500&auto=format&fit=crop' },
+  { name: 'ที่ถ่ายรูป', icon: '📸', image: 'https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=500&auto=format&fit=crop' },
   { name: 'คาเฟ่', icon: '☕', image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=500&auto=format&fit=crop' }
 ]
 
@@ -362,7 +362,7 @@ const prevSlide = () => {
 }
 
 /* Categories แบบกล่องภาพ */
-.category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+.category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; max-width: 700px; }
 .category-box { position: relative; height: 180px; border-radius: 16px; overflow: hidden; text-decoration: none; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .category-box:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
 .category-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
