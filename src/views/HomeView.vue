@@ -362,8 +362,8 @@ const prevSlide = () => {
 }
 
 /* Categories แบบกล่องภาพ */
-.category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; max-width: 700px; }
-.category-box { position: relative; height: 180px; border-radius: 16px; overflow: hidden; text-decoration: none; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+.category-box { position: relative; height: 120px; border-radius: 16px; overflow: hidden; text-decoration: none; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .category-box:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
 .category-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
 .category-box:hover img { transform: scale(1.1); }
