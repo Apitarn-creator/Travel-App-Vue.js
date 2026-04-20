@@ -196,3 +196,30 @@ export async function markNotificationRead(id: number) {
     headers: { 'Authorization': `Bearer ${token}` }
   })
 }
+
+// ✅ ดึงข้อมูล auth provider
+export async function getAuthInfo() {
+  const token = localStorage.getItem('token')
+  if (!token) return null
+  const res = await fetch(`${API_BASE_URL}/api/users/me/auth-info`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  if (!res.ok) return null
+  return await res.json()
+}
+
+// ✅ เปลี่ยนรหัสผ่าน
+export async function changePassword(currentPassword: string, newPassword: string) {
+  const token = localStorage.getItem('token')
+  const res = await fetch(`${API_BASE_URL}/api/users/me/password`, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ currentPassword, newPassword })
+  })
+  const text = await res.text()
+  if (!res.ok) throw new Error(text)
+  return JSON.parse(text)
+}

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { updateProfile, getMyBookmarks } from '../api/userApi'
+import { updateProfile, getMyBookmarks, getAuthInfo, changePassword } from '../api/userApi'
 
 const router = useRouter()
 const currentUser = ref<any>(null)
@@ -11,9 +11,16 @@ const errorMessage = ref('')
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
 // ✅ Bookmark tab
-const activeSection = ref<'profile' | 'bookmarks'>('profile')
+const activeSection = ref<'profile' | 'bookmarks' | 'security'>('profile')
 const bookmarks = ref<any[]>([])
 const bookmarksLoading = ref(false)
+
+// ✅ Security section
+const isLocalAccount = ref(false)
+const pwForm = ref({ current: '', newPw: '', confirm: '' })
+const pwLoading = ref(false)
+const pwSuccess = ref('')
+const pwError = ref('')
 
 // ฟอร์มเก็บข้อมูลทั้งหมด
 const form = ref({
@@ -36,8 +43,9 @@ onMounted(() => {
   if (userString) {
     currentUser.value = JSON.parse(userString)
     
-    // โหลดข้อมูลเดิมมาแสดง
-    form.value.username = currentUser.value.username || ''
+    // เช็ค auth provider
+    const info = await getAuthInfo()
+    if (info) isLocalAccount.value = info.isLocal
     form.value.avatarUrl = currentUser.value.avatarUrl || ''
     
     // 💡 ดึงจากก้อน profile (ใช้เครื่องหมาย ? เผื่อกรณีที่ profile ยังไม่มี)
@@ -132,10 +140,37 @@ async function loadBookmarks() {
   finally { bookmarksLoading.value = false }
 }
 
-async function switchSection(section: 'profile' | 'bookmarks') {
+async function switchSection(section: 'profile' | 'bookmarks' | 'security') {
   activeSection.value = section
   if (section === 'bookmarks' && bookmarks.value.length === 0) {
     await loadBookmarks()
+  }
+}
+
+async function handleChangePassword() {
+  pwError.value = ''
+  pwSuccess.value = ''
+  if (!pwForm.value.current || !pwForm.value.newPw) {
+    pwError.value = 'กรุณากรอกข้อมูลให้ครบ'
+    return
+  }
+  if (pwForm.value.newPw !== pwForm.value.confirm) {
+    pwError.value = 'รหัสผ่านใหม่ไม่ตรงกัน'
+    return
+  }
+  if (pwForm.value.newPw.length < 6) {
+    pwError.value = 'รหัสผ่านใหม่ต้องมีอย่างน้อย 6 ตัวอักษร'
+    return
+  }
+  pwLoading.value = true
+  try {
+    await changePassword(pwForm.value.current, pwForm.value.newPw)
+    pwSuccess.value = 'เปลี่ยนรหัสผ่านสำเร็จ! 🎉'
+    pwForm.value = { current: '', newPw: '', confirm: '' }
+  } catch (e: any) {
+    pwError.value = e.message || 'เกิดข้อผิดพลาด'
+  } finally {
+    pwLoading.value = false
   }
 }
 
@@ -166,7 +201,10 @@ function cleanDescription(text: string | null): string {
           <a href="#" class="nav-item" :class="{ active: activeSection === 'bookmarks' }" @click.prevent="switchSection('bookmarks')">
             <span class="icon">🔖</span> ทริปที่บันทึกไว้
           </a>
-          <a href="#" class="nav-item"><span class="icon">🔒</span> ความปลอดภัย</a>
+          <!-- แสดงเฉพาะ LOCAL account เท่านั้น -->
+          <a v-if="isLocalAccount" href="#" class="nav-item" :class="{ active: activeSection === 'security' }" @click.prevent="switchSection('security')">
+            <span class="icon">🔒</span> ความปลอดภัย
+          </a>
         </nav>
 
         <div class="sidebar-footer">
@@ -367,6 +405,35 @@ function cleanDescription(text: string | null): string {
                 <p class="bm-desc">{{ cleanDescription(trip.description) }}</p>
               </div>
             </router-link>
+          </div>
+        </template>
+
+        <!-- ===== SECURITY SECTION ===== -->
+        <template v-else-if="activeSection === 'security'">
+          <div class="content-header">
+            <h2>🔒 ความปลอดภัย</h2>
+            <p>เปลี่ยนรหัสผ่านสำหรับบัญชีของคุณ</p>
+          </div>
+          <div v-if="pwSuccess" class="alert success">{{ pwSuccess }}</div>
+          <div v-if="pwError" class="alert error">{{ pwError }}</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>รหัสผ่านปัจจุบัน</label>
+              <input type="password" v-model="pwForm.current" placeholder="กรอกรหัสผ่านปัจจุบัน" :disabled="pwLoading" />
+            </div>
+            <div class="form-group">
+              <label>รหัสผ่านใหม่</label>
+              <input type="password" v-model="pwForm.newPw" placeholder="อย่างน้อย 6 ตัวอักษร" :disabled="pwLoading" />
+            </div>
+            <div class="form-group full-width">
+              <label>ยืนยันรหัสผ่านใหม่</label>
+              <input type="password" v-model="pwForm.confirm" placeholder="กรอกรหัสผ่านใหม่อีกครั้ง" :disabled="pwLoading" />
+            </div>
+          </div>
+          <div class="form-actions">
+            <button @click="handleChangePassword" class="btn-save" :disabled="pwLoading">
+              {{ pwLoading ? 'กำลังบันทึก...' : 'เปลี่ยนรหัสผ่าน' }}
+            </button>
           </div>
         </template>
 
